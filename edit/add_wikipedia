@@ -8,6 +8,7 @@ import re
 import sys
 
 import pywikibot
+from kamusi.entry import get_entry
 
 lang_map = {
     "sw": "Swahili",
@@ -36,6 +37,7 @@ def add_wikipedia(text, lang):
     """
     Add Wikipedia link to text
     """
+    text = get_entry(text, lang)
     new_text = re.sub(
             r"(==Swahili==\n(\[.*\n)?)\n",
             rf"\1{{{{wikipedia|lang={lang}}}}}\n\n",
