@@ -7,9 +7,9 @@ Add category to Wiktionry entry
 import sys
 
 import click
+import kamusi
 import pywikibot
 import requests
-import kamusi
 
 
 @click.command()
