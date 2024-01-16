@@ -4,10 +4,7 @@ Functions to work with Wiktionary entries
 
 import re
 
-lang_map = {
-    "sw": "Swahili",
-    "ttj": "Tooro",
-}
+from .lang import lang_map
 
 
 def get_entry(text, lang):

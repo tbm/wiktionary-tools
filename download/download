@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 import sys
 
-from kamusi.entry import get_entry
+import kamusi
 import pywikibot
 
 
@@ -18,11 +18,11 @@ def download(outdir):
     """
     Path.mkdir(outdir, exist_ok=True)
     site = pywikibot.Site("en", "wiktionary")
-    lemmas = pywikibot.Category(site, "Tooro_lemmas")
+    lang = "ttj"
+    lemmas = pywikibot.Category(site, kamusi.lang_map[lang] + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
-        lang = "ttj"
-        text = get_entry(page.text, lang)
+        text = kamusi.get_entry(page.text, lang)
         outfile = outdir / Path(page.title().replace("/", "_"))
         with open(outfile, "w", encoding="utf-8") as outfile:
             print(text, file=outfile)

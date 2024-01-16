@@ -9,10 +9,6 @@ import sys
 import pywikibot
 import kamusi
 
-lang_map = {
-    "sw": "Swahili",
-}
-
 
 def add_wikipedia_page(page, lang):
     """
@@ -24,7 +20,7 @@ def add_wikipedia_page(page, lang):
     if page.text == text:
         print("No change")
         sys.exit(1)
-    changelog = f"/* {lang_map[lang]} */ Add link to Wikipedia"
+    changelog = f"/* {kamusi.lang_map[lang]} */ Add link to Wikipedia"
     print(text)
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":
