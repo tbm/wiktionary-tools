@@ -24,7 +24,7 @@ def add_category(entry, category, lang):
 
 def add_wikipedia(entry, lang):
     """
-    Add Wikipedia link to  entry
+    Add Wikipedia link to entry
     """
     if "{{wikipedia" in entry or "{{wp" in entry:
         return entry
