@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+"""
+Add Wikipedia link to Wiktionry entry
+"""
+
+import re
+import sys
+
+import pywikibot
+
+lang_map = {
+    "sw": "Swahili",
+}
+
+
+def add_wikipedia_page(page, lang):
+    """
+    Add Wikipedia link to page
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    text = add_wikipedia(page.text, lang)
+    if page.text == text:
+        print("No change")
+        sys.exit(1)
+    changelog = f"/* {lang_map[lang]} */ Add link to Wikipedia"
+    print(text)
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = text
+        page.save(changelog, minor=False)
+
+
+def add_wikipedia(text, lang):
+    """
+    Add Wikipedia link to text
+    """
+    new_text = re.sub(
+            r"(==Swahili==\n(\[.*\n)?)\n",
+            rf"\1{{{{wikipedia|lang={lang}}}}}\n\n",
+            text,
+            flags=re.M,
+    )
+    return new_text
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Need arguments: <PAGE>")
+        sys.exit(1)
+    add_wikipedia_page(sys.argv[1], "sw")
