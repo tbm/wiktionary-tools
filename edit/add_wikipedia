@@ -4,7 +4,6 @@
 Add Wikipedia link to Wiktionry entry
 """
 
-import re
 import sys
 
 import pywikibot
@@ -38,13 +37,9 @@ def add_wikipedia(text, lang):
     Add Wikipedia link to text
     """
     text = get_entry(text, lang)
-    new_text = re.sub(
-            r"(==Swahili==\n(\[.*\n)?)\n",
-            rf"\1{{{{wikipedia|lang={lang}}}}}\n\n",
-            text,
-            flags=re.M,
-    )
-    return new_text
+    first_break = text.find("\n\n") + 1
+    wp = "{{wikipedia|lang=" + lang + "}}"
+    return text[:first_break] + wp + "\n" + text[first_break:]
 
 
 if __name__ == "__main__":
