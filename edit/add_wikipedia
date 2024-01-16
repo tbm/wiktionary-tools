@@ -7,7 +7,7 @@ Add Wikipedia link to Wiktionry entry
 import sys
 
 import pywikibot
-from kamusi.entry import get_entry
+import kamusi
 
 lang_map = {
     "sw": "Swahili",
@@ -20,7 +20,7 @@ def add_wikipedia_page(page, lang):
     """
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
-    text = add_wikipedia(page.text, lang)
+    text = kamusi.add_wikipedia(page.text, lang)
     if page.text == text:
         print("No change")
         sys.exit(1)
@@ -30,18 +30,6 @@ def add_wikipedia_page(page, lang):
     if not edit.upper() == "N":
         page.text = text
         page.save(changelog, minor=False)
-
-
-def add_wikipedia(text, lang):
-    """
-    Add Wikipedia link to text
-    """
-    text = get_entry(text, lang)
-    if "{{wikipedia" in text or "{{wp" in text:
-        return text
-    first_break = text.find("\n\n") + 1
-    wp = "{{wikipedia|lang=" + lang + "}}"
-    return text[:first_break] + wp + "\n" + text[first_break:]
 
 
 if __name__ == "__main__":
