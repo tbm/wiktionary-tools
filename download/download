@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+"""
+Download pages
+"""
+
+import re
+from pathlib import Path
+import sys
+
+import pywikibot
+
+
+def download(outdir):
+    """
+    Downlodad lemmas and store them in a directory
+    """
+    Path.mkdir(outdir, exist_ok=True)
+    site = pywikibot.Site("en", "wiktionary")
+    lemmas = pywikibot.Category(site, "Tooro_lemmas")
+    for page in lemmas.articles():
+        print(page.title())
+        text = page.text
+        loc = text.find("==Tooro==")
+        text = text[loc:]
+        match = re.search(r"\n==[^=]", text)
+        if match:
+            text = text[: match.start()]
+        with open(outdir / Path(page.title()), "w", encoding="utf-8") as outfile:
+            print(text, file=outfile)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("download DIRECTORY")
+        sys.exit(1)
+    download(Path(sys.argv[1]))
