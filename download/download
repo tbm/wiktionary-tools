@@ -23,7 +23,8 @@ def download(outdir):
         print(page.title())
         lang = "ttj"
         text = get_entry(page.text, lang)
-        with open(outdir / Path(page.title()), "w", encoding="utf-8") as outfile:
+        outfile = outdir / Path(page.title().replace("/", "_"))
+        with open(outfile, "w", encoding="utf-8") as outfile:
             print(text, file=outfile)
 
 
