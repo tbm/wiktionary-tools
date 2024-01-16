@@ -8,28 +8,28 @@ import re
 from pathlib import Path
 import sys
 
+import click
 import kamusi
 import pywikibot
 
-
-def download(outdir):
+@click.command()
+@click.option("--lang", type=str, required=True, help="Language code")
+@click.option("--out", type=click.Path(), required=True, help="Directory for output")
+def download(lang, out):
     """
     Downlodad lemmas and store them in a directory
     """
-    Path.mkdir(outdir, exist_ok=True)
+    out = Path(out)
+    Path.mkdir(out, exist_ok=True)
     site = pywikibot.Site("en", "wiktionary")
-    lang = "ttj"
     lemmas = pywikibot.Category(site, kamusi.lang_map[lang] + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
         text = kamusi.get_entry(page.text, lang)
-        outfile = outdir / Path(page.title().replace("/", "_"))
+        outfile = out / Path(page.title().replace("/", "_"))
         with open(outfile, "w", encoding="utf-8") as outfile:
             print(text, file=outfile)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("download DIRECTORY")
-        sys.exit(1)
-    download(Path(sys.argv[1]))
+    download()  # pylint: disable=no-value-for-parameter
