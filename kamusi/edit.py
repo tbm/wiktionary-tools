@@ -22,6 +22,19 @@ def add_category(entry, category, lang):
     return entry
 
 
+def add_thumbnail(entry, thumbnail):
+    """
+    Add thumbnail to entry
+    """
+    if "[[File:" in entry or "[[Image:" in entry:
+        return entry
+    if not thumbnail.startswith("File:"):
+        thumbnail = "File:" + thumbnail
+    link = "[[" + thumbnail + "|thumb]]"
+    first_break = entry.find("\n") + 1
+    return entry[:first_break] + link + "\n" + entry[first_break:]
+
+
 def add_wikipedia(entry, lang):
     """
     Add Wikipedia link to entry
