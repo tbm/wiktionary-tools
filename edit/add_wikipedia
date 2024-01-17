@@ -12,6 +12,9 @@ import pywikibot
 import requests
 
 def check_wikipedia(page, lang):
+    """
+    Check whether a Wikipedia page exists
+    """
     url = "https://" + lang + ".wikipedia.org/wiki/" + page.capitalize()
     url = url.replace(" ", "_")
     wp = requests.head(url, timeout=5)

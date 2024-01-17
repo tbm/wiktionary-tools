@@ -14,7 +14,7 @@ import requests
 
 def check_category(category, lang):
     """
-    Verify that a category page exists
+    Check whether a category page exists
     """
     url = "https://en.wiktionary.org/wiki/Category:" + lang + ":" + category
     url = url.replace(" ", "_")
