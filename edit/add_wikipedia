@@ -11,6 +11,13 @@ import kamusi
 import pywikibot
 import requests
 
+def check_wikipedia(page, lang):
+    url = "https://" + lang + ".wikipedia.org/wiki/" + page.capitalize()
+    wp = requests.head(url, timeout=5)
+    if not wp.ok:
+        print("Wikipedia page doesn't exist")
+        sys.exit(1)
+
 
 @click.command()
 @click.argument("page")
@@ -19,12 +26,7 @@ def add_wikipedia_page(page, lang):
     """
     Add Wikipedia link to page
     """
-    wp = requests.head(
-        f"https://{lang}.wikipedia.org/wiki/{page.capitalize()}", timeout=5
-    )
-    if not wp.ok:
-        print("Wikipedia page doesn't exist")
-        sys.exit(1)
+    check_wikipedia(page, lang)
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
     old_text = kamusi.get_entry(page.text, lang)
