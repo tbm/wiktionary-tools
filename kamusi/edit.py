@@ -22,7 +22,7 @@ def add_category(entry, category, lang):
     return entry
 
 
-def add_thumbnail(entry, thumbnail):
+def add_thumbnail(entry, thumbnail, description=None):
     """
     Add thumbnail to entry
     """
@@ -30,7 +30,11 @@ def add_thumbnail(entry, thumbnail):
         return entry
     if not thumbnail.startswith("File:"):
         thumbnail = "File:" + thumbnail
-    link = "[[" + thumbnail + "|thumb]]"
+    if description:
+        description = "|" + description
+    else:
+        description = ""
+    link = "[[" + thumbnail + "|thumb" + description + "]]"
     first_break = entry.find("\n") + 1
     return entry[:first_break] + link + "\n" + entry[first_break:]
 

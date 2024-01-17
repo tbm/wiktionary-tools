@@ -27,8 +27,9 @@ def check_commons(page):
 @click.command()
 @click.argument("page")
 @click.argument("thumbnail")
+@click.argument("description", required=False)
 @click.option("--lang", default="sw", help="Language code")
-def add_thumbnail_page(page, thumbnail, lang):
+def add_thumbnail_page(page, thumbnail, description, lang):
     """
     Add thumbnail to entry
     """
@@ -45,7 +46,7 @@ def add_thumbnail_page(page, thumbnail, lang):
     if not old_text:
         print(f"No page {page} for language {lang}")
         sys.exit(1)
-    new_text = kamusi.add_thumbnail(old_text, thumbnail)
+    new_text = kamusi.add_thumbnail(old_text, thumbnail, description)
     if old_text == new_text:
         print("No change")
         sys.exit(1)
