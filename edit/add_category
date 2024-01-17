@@ -20,8 +20,8 @@ def check_category(category, lang):
     url = url.replace(" ", "_")
     category_page = requests.head(url, timeout=5)
     if not category_page.ok:
-        print(f"Category {category} doesn't exist for language {lang}")
-        sys.exit(1)
+        return False
+    return True
 
 
 @click.command()
@@ -34,7 +34,9 @@ def add_category_page(page, category, lang):
     """
 
     for cat in category.split("|"):
-        check_category(cat, lang)
+        if not check_category(cat, lang):
+            print(f"Category {category} doesn't exist for language {lang}")
+            sys.exit(1)
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
     old_text = kamusi.get_entry(page.text, lang)

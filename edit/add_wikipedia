@@ -16,8 +16,8 @@ def check_wikipedia(page, lang):
     url = url.replace(" ", "_")
     wp = requests.head(url, timeout=5)
     if not wp.ok:
-        print("Wikipedia page doesn't exist")
-        sys.exit(1)
+        return False
+    return True
 
 
 @click.command()
@@ -27,7 +27,9 @@ def add_wikipedia_page(page, lang):
     """
     Add Wikipedia link to page
     """
-    check_wikipedia(page, lang)
+    if not check_wikipedia(page, lang):
+        print("Wikipedia page doesn't exist")
+        sys.exit(1)
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
     old_text = kamusi.get_entry(page.text, lang)
