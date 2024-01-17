@@ -13,6 +13,7 @@ import requests
 
 def check_wikipedia(page, lang):
     url = "https://" + lang + ".wikipedia.org/wiki/" + page.capitalize()
+    url = url.replace(" ", "_")
     wp = requests.head(url, timeout=5)
     if not wp.ok:
         print("Wikipedia page doesn't exist")
