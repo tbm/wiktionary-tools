@@ -12,6 +12,17 @@ import pywikibot
 import requests
 
 
+def check_category(category, lang):
+    """
+    Verify that a category page exists
+    """
+    url = "https://en.wiktionary.org/wiki/Category:" + lang + ":" + category
+    category_page = requests.head(url, timeout=5)
+    if not category_page.ok:
+        print(f"Category {category} doesn't exist for language {lang}")
+        sys.exit(1)
+
+
 @click.command()
 @click.argument("page")
 @click.argument("category")
@@ -21,12 +32,8 @@ def add_category_page(page, category, lang):
     Add category to page
     """
 
-    cat = requests.head(
-        f"https://en.wiktionary.org/wiki/Category:{lang}:{category}", timeout=5
-    )
-    if not cat.ok:
-        print(f"Category {category} doesn't exist for language {lang}")
-        sys.exit(1)
+    for cat in category.split("|"):
+        check_category(cat, lang)
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
     old_text = kamusi.get_entry(page.text, lang)
