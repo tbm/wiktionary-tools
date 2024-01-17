@@ -39,7 +39,7 @@ def add_thumbnail(entry, thumbnail, description=None):
     return entry[:first_break] + link + "\n" + entry[first_break:]
 
 
-def add_wikipedia(entry, lang):
+def add_wikipedia(entry, lang, wikipedia=None):
     """
     Add Wikipedia link to entry
     """
@@ -47,6 +47,8 @@ def add_wikipedia(entry, lang):
         return entry
     first_break = entry.find("\n\n") + 1
     wp = "{{wikipedia"
+    if wikipedia:
+        wp += "|" + wikipedia
     if lang != "en":
         wp += "|lang=" + lang
     wp += "}}"

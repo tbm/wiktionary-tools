@@ -25,12 +25,13 @@ def check_wikipedia(page, lang):
 
 @click.command()
 @click.argument("page")
+@click.argument("wikipedia", required=False)
 @click.option("--lang", default="sw", help="Language code")
-def add_wikipedia_page(page, lang):
+def add_wikipedia_page(page, wikipedia, lang):
     """
     Add Wikipedia link to page
     """
-    if not check_wikipedia(page, lang):
+    if not check_wikipedia(wikipedia or page, lang):
         print("Wikipedia page doesn't exist")
         sys.exit(1)
     site = pywikibot.Site("en", "wiktionary")
@@ -39,7 +40,7 @@ def add_wikipedia_page(page, lang):
     if not old_text:
         print(f"No page {page} for language {lang}")
         sys.exit(1)
-    new_text = kamusi.add_wikipedia(old_text, lang)
+    new_text = kamusi.add_wikipedia(old_text, lang, wikipedia)
     if old_text == new_text:
         print("No change")
         sys.exit(1)
