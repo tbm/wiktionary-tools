@@ -11,6 +11,7 @@ import kamusi
 import pywikibot
 import requests
 
+
 def check_wikipedia(page, lang):
     """
     Check whether a Wikipedia page exists
