@@ -35,7 +35,7 @@ def add_category_page(page, category, lang):
 
     for cat in category.split("|"):
         if not check_category(cat, lang):
-            print(f"Category {category} doesn't exist for language {lang}")
+            print(f"Category {cat} doesn't exist for language {lang}")
             sys.exit(1)
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
