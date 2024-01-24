@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+"""
+Find invalid characters in hyphenation patterns
+"""
+
+from pathlib import Path
+
+import click
+import mwparserfromhell
+
+
+def check_hyph_chars(entry_name, entry):
+    """
+    Check an entry for invalid characters in the hyphentation info
+    """
+    for line in entry.splitlines():
+        if "{{hyph" not in line:
+            continue
+        wikicode = mwparserfromhell.parse(line)
+        templates = wikicode.filter_templates()
+        for template in templates:
+            if template.name not in ("hyph", "hyphenation"):
+                continue
+            params = [str(p) for p in template.params if not p.showkey]
+            hyph = "".join(params[1:])
+            if "·" in line:
+                print(entry_name, "invalid character:", hyph)
+            if "-" in hyph and "-" not in entry_name:
+                print(entry_name, "invalid character:", hyph)
+            if "." in hyph and "." not in entry_name:
+                print(entry_name, "invalid character:", hyph)
+
+
+@click.command()
+@click.argument("directory")
+def check_all_entries(directory):
+    """
+    Check all entries in the directory
+    """
+    for filepath in sorted(Path(directory).glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check_hyph_chars(filepath.name, entry)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter

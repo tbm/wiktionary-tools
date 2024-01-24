@@ -1,3 +1,4 @@
 click
+mwparserfromhell
 pywikibot
 requests
