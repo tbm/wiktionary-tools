@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+"""
+Fix invalid characters in hyphenation patterns in entry
+
+This will replace · with |.
+
+It will also replace . and - with | if the page name doesn't
+contain these characters.
+"""
+
+import sys
+
+import click
+import kamusi
+import pywikibot
+
+
+def replace_invalid_hyph_characters(entry_name, entry):
+    """
+    Fix invalid characters in hyphenation patterns in entry
+    """
+    # FIXME: we probably ought to use mwparserfromhell to change the parameter
+    for line in entry.splitlines():
+        if "{{hyph" in line:
+            line = line.replace("·", "|")
+            if "." in line and "." not in entry_name:
+                line = line.replace(".", "|")
+            if "-" in line and "-" not in entry_name:
+                line = line.replace("-", "|")
+        yield line
+
+
+@click.command()
+@click.argument("page")
+@click.option("--lang", default="de", help="Language code")
+def main(page, lang):
+    """
+    Fix invalid characters in hyphenation patterns
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "\n".join(replace_invalid_hyph_characters(page.title(), old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = f"/* {kamusi.lang_map[lang]} */ Use template parameters for hyphenation"
+    print(new_text)
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
