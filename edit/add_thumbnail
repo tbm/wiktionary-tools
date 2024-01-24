@@ -51,7 +51,7 @@ def add_thumbnail_page(page, thumbnail, description, lang):
         print("No change")
         sys.exit(1)
     changelog = f"/* {kamusi.lang_map[lang]} */ Add thumbnail"
-    print(new_text)
+    print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":
         page.text = page.text.replace(old_text, new_text)
