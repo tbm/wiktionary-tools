@@ -19,5 +19,5 @@ def get_entry(text, lang):
     text = text[start:]
     end = re.search(r"\n==[^=]", text)
     if end:
-        return text[: end.start()]
+        return text[: end.start()+1]
     return text
