@@ -9,19 +9,39 @@ import sys
 import click
 import kamusi
 import pywikibot
-import requests
 
 
-def check_category(category, lang):
+def check_category(site, category, lang):
     """
     Check whether a category page exists
     """
-    url = "https://en.wiktionary.org/wiki/Category:" + lang + ":" + category
-    url = url.replace(" ", "_")
-    category_page = requests.head(url, timeout=5)
-    if not category_page.ok:
-        return False
-    return True
+    # We can't use pywikibot.Category because that redirects to the
+    # Wiktionary for lang
+    title = "Category" + ":" + lang + ":" + category
+    page = pywikibot.Page(site, title)
+    return page.exists()
+
+
+def check_category_autocat(site, category, lang):
+    """
+    Check whether a category uses {{auto cat}}
+    """
+    title = "Category" + ":" + lang + ":" + category
+    page = pywikibot.Page(site, title)
+    if "{{auto cat}}" in page.text:
+        return True
+    return False
+
+
+def create_category(site, category, lang, text):
+    """
+    Create a category page for a specific language
+    """
+    title = "Category" + ":" + lang + ":" + category
+    page = pywikibot.Page(site, title)
+    page.text = text
+    changelog = text
+    page.save(changelog, minor=False)
 
 
 @click.command()
@@ -33,11 +53,14 @@ def add_category_page(page, category, lang):
     Add category to page
     """
 
-    for cat in category.split("|"):
-        if not check_category(cat, lang):
-            print(f"Category {cat} doesn't exist for language {lang}")
-            sys.exit(1)
     site = pywikibot.Site("en", "wiktionary")
+    for cat in category.split("|"):
+        if not check_category(site, cat, "en"):
+            print(f"Category {cat} doesn't exist")
+            sys.exit(1)
+        if not check_category_autocat(site, cat, "en"):
+            print(f"Category {cat} is not '{{{{auto cat}}}}'")
+            sys.exit(1)
     page = pywikibot.Page(site, page)
     old_text = kamusi.get_entry(page.text, lang)
     if not old_text:
@@ -53,6 +76,10 @@ def add_category_page(page, category, lang):
     if not edit.upper() == "N":
         page.text = page.text.replace(old_text, new_text)
         page.save(changelog, minor=False)
+    for cat in category.split("|"):
+        if not check_category(site, cat, lang):
+            print(f"Creating category {cat} for language {lang}")
+            create_category(site, category, lang, "{{auto cat}}\n")
 
 
 if __name__ == "__main__":
