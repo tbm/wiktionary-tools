@@ -25,8 +25,7 @@ def download(lang, out):
     lemmas = pywikibot.Category(site, kamusi.lang_map[lang] + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
-        text = kamusi.get_entry(page.text, lang)
-        text = text.rstrip("\n")
+        text = kamusi.get_entry(page.text, lang, strip=True)
         outfile = out / Path(page.title().replace("/", "_"))
         with open(outfile, "w", encoding="utf-8") as outfile:
             print(text, file=outfile)

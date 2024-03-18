@@ -7,7 +7,7 @@ import re
 from .lang import lang_map
 
 
-def get_entry(text, lang):
+def get_entry(text, lang, strip=False):
     """
     Get the entry for a specific language from a text
     """
@@ -19,5 +19,7 @@ def get_entry(text, lang):
     text = text[start:]
     end = re.search(r"\n==[^=]", text)
     if end:
-        return text[: end.start()+1]
+        text = text[: end.start()+1]
+    if strip:
+        return text.rstrip()
     return text
