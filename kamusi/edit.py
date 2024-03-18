@@ -14,12 +14,8 @@ def add_category(entry, category, lang):
         print("Page already has category")
         return entry
 
-    cat = "\n{{C|" + lang + "|" + category + "}}\n"
-    if entry[-1] != "\n":
-        entry += "\n" + cat
-    else:
-        entry += cat
-    return entry
+    cat = "{{C|" + lang + "|" + category + "}}\n"
+    return entry.rstrip() + "\n\n" + cat + "\n"
 
 
 def add_thumbnail(entry, thumbnail, description=None):
