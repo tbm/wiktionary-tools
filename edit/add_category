@@ -30,6 +30,8 @@ def check_category_autocat(site, category, lang):
     page = pywikibot.Page(site, title)
     if "{{auto cat}}" in page.text:
         return True
+    if "{{autocat}}" in page.text:
+        return True
     return False
 
 
