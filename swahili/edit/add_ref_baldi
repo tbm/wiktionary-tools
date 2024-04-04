@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+"""
+Add a reference to Baldi (2020)
+"""
+
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+@click.command()
+@click.argument("page")
+@click.argument("pageno")
+@click.argument("ref")
+@click.option("--lang", default="sw", help="Language code")
+def add_ref_baldi(page, pageno, ref, lang):
+    """
+    Add Baldi (2020) reference to page
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    ref_text = "<ref>{{R:sw:Baldi:2020|page=" + pageno + " Nr. " + ref + "}}</ref>"
+    new_text = kamusi.add_ety_ref(old_text, ref_text)
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = f"/* {kamusi.lang_map[lang]} */ Add reference to Baldi"
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    add_ref_baldi()  # pylint: disable=no-value-for-parameter

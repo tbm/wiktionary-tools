@@ -18,6 +18,45 @@ def add_category(entry, category, lang):
     return entry.rstrip() + "\n\n" + cat + "\n"
 
 
+def add_ety_ref(entry, ref):
+    """
+    Add a reference to the etymology
+    """
+    loc = entry.find("}}.") + 3
+    entry = entry[:loc] + ref + entry[loc:]
+    return add_reflist(entry)
+
+
+def add_ref(entry, ref):
+    """
+    Add a reference to the "References" section
+    """
+    loc = entry.find("===References===")
+    if loc != -1:
+        loc = entry.find("\n\n", loc) + 1
+        return entry[:loc] + ref + "\n" + entry[loc:]
+
+    loc = entry.find("===Further reading===")
+    if loc == -1:
+        loc = entry.find("===Anagrams===")
+    if loc == -1:
+        if match := re.search(r"(\{\{\s*(topics|c|C)\s*\||\[\[Category:\w+:)", entry):
+            loc = match.start()
+    ref = "===References===\n" + ref + "\n\n"
+    return entry[:loc] + ref + entry[loc:]
+
+
+def add_reflist(entry):
+    """
+    Add "{{reflist}"" to the "References" section
+    """
+    if "{{reflist}}" in entry:
+        return entry
+    if re.search(r"<references\s*/>", entry):
+        return entry
+    return add_ref(entry, "{{reflist}}")
+
+
 def add_thumbnail(entry, thumbnail, description=None):
     """
     Add thumbnail to entry
