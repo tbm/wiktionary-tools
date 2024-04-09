@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+
+"""
+Find nouns that might be derived from a reciprocal verb (e.g. uhusiano
+from -husiana).
+"""
+
+from pathlib import Path
+
+DIR = Path("/home/tbm/tmp/wiktionary/swahili")
+
+IGNORE = [
+    "Jumatano",
+    "Kiitaliano",
+    "bano",
+    "kitano",
+    "mabano",
+    "mbano",
+    "mfano",
+    "ndoano",
+    "ngano",
+    "njano",
+    "sindano",
+    "tano",
+]
+
+
+def is_etymology(line):
+    """
+    Check if a line is an etymology line.  Note that this is extremely
+    quick & dirty.
+    """
+
+    if "From {{pre" in line:
+        return True
+    if "From {{af" in line:
+        return True
+    if "From {{m|" in line:
+        return True
+    return False
+
+
+def check_file(filepath):
+    """
+    Check if an etymology might be missing.
+    """
+    with open(filepath, "r", encoding="utf-8") as fp:
+        for line in fp.readlines():
+            if "{{bor+|sw|en|" in line:
+                return False
+            if is_etymology(line):
+                if "ana|" in line:
+                    return False
+            if "{{alt form" in line or "{{alternative form" in line:
+                return False
+    return True
+
+
+def process_files(directory):
+    """
+    Look for certain files (basically ending "ano") and check them.
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        if filepath.stem in IGNORE:
+            continue
+        if " " in filepath.stem:
+            continue
+        if not filepath.stem.endswith("ano"):
+            continue
+        if check_file(filepath):
+            print(filepath)
+
+
+if __name__ == "__main__":
+    process_files(DIR)
