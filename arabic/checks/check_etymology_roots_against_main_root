@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+"""
+Check that all roots listed in the different etymology sections are
+the same as the root listed in the main section of an entry (an
+ar-rootbox under the "Arabic header"), assuming there is one.
+"""
+
+from pathlib import Path
+import re
+
+import mwparserfromhell
+
+DIR = Path("/home/tbm/tmp/wiktionary/arabic")
+
+
+def get_root(text):
+    """
+    Get the Arabic root from a text containing ar-root or ar-rootbox.
+    """
+    wikicode = mwparserfromhell.parse(text)
+    templates = wikicode.filter_templates()
+    for i in templates:
+        if i.name in ("ar-root", "ar-rootbox"):
+            params = [
+                str(x.value) for x in i.params if str(x.name).isdigit() and x.value
+            ]
+            return " ".join(params).strip()
+    return None
+
+
+def get_etymologies(entry):
+    """
+    Return a list of the texts in etymology sections
+    """
+    return re.split(r"==+Etymology.*?==+\n", entry)[1:]
+
+
+def check_arabic_root(filepath):
+    """
+    Take the root from the ar-rootbox from the main section of an entry
+    and check if all other roots listed in the different etymologies are
+    the same.
+    """
+    with open(filepath, "r", encoding="utf-8") as infile:
+        entry = infile.read()
+    main_section = entry.split("\n==")[0]
+    if "{{ar-rootbox" not in main_section:
+        return False
+    # TODO: handle pages with multiple roots
+    if len(re.findall(r"\{\{ar-rootbox\|", main_section)) > 2:
+        return False
+    entry_root = get_root(main_section)
+    for etymology in get_etymologies(entry):
+        for rootbox in re.findall(r"\{\{ar-rootbox[^}]+\}\}", etymology):
+            root = get_root(rootbox)
+            if root != entry_root:
+                print(f"Mismatch: {root} vs {entry_root}")
+                return True
+    return False
+
+
+def process_files(directory):
+    """
+    Look for files and check them.
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        if check_arabic_root(filepath):
+            print(filepath)
+
+
+if __name__ == "__main__":
+    process_files(DIR)
