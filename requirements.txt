@@ -1,4 +1,5 @@
 click
+mediawiki_langcodes>=0.2.5
 mwparserfromhell
 pywikibot
 requests

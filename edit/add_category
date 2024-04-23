@@ -72,7 +72,7 @@ def add_category_page(page, category, lang):
     if old_text == new_text:
         print("No change")
         sys.exit(1)
-    changelog = f"/* {kamusi.lang_map[lang]} */ Add category"
+    changelog = kamusi.format_changelog(lang, "Add category")
     print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":

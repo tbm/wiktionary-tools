@@ -4,16 +4,14 @@ Functions to work with Wiktionary entries
 
 import re
 
-from .lang import lang_map
+from mediawiki_langcodes import code_to_name
 
 
 def get_entry(text, lang, strip=False):
     """
     Get the entry for a specific language from a text
     """
-    if lang not in lang_map:
-        raise NotImplementedError(f"Unsupported language: {lang}")
-    start = text.find(f"=={lang_map[lang]}==")
+    start = text.find("==" + code_to_name(lang, "en") + "==")
     if start == -1:
         return None
     text = text[start:]
