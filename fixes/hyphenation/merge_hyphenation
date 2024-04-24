@@ -21,7 +21,7 @@ def merge_hyph(entry):
     """
     Merge multiple hyphenation templates into one
     """
-    for line in entry.splitlines():
+    for line in entry.splitlines(keepends=True):
         if "{{hyph" in line:
             line = re.sub(r"\|nocaption=(1|y|yes)", "", line)
             line = re.sub(
@@ -45,7 +45,7 @@ def main(page, lang):
     if not old_text:
         print(f"No page {page} for language {lang}")
         sys.exit(1)
-    new_text = "\n".join(merge_hyph(old_text))
+    new_text = "".join(merge_hyph(old_text))
     if old_text == new_text:
         print("No change")
         sys.exit(1)

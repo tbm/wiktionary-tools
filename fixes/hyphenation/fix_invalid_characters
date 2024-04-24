@@ -22,7 +22,7 @@ def replace_invalid_hyph_characters(entry_name, entry):
     Fix invalid characters in hyphenation patterns in entry
     """
     # FIXME: we probably ought to use mwparserfromhell to change the parameter
-    for line in entry.splitlines():
+    for line in entry.splitlines(keepends=True):
         if "{{hyph" in line:
             line = line.replace("·", "|")
             if "." in line and "." not in entry_name:
@@ -45,7 +45,7 @@ def main(page, lang):
     if not old_text:
         print(f"No page {page} for language {lang}")
         sys.exit(1)
-    new_text = "\n".join(replace_invalid_hyph_characters(page.title(), old_text))
+    new_text = "".join(replace_invalid_hyph_characters(page.title(), old_text))
     if old_text == new_text:
         print("No change")
         sys.exit(1)
