@@ -25,7 +25,7 @@ def merge_hyph(entry):
         if "{{hyph" in line:
             line = re.sub(r"\|nocaption=(1|y|yes)", "", line)
             line = re.sub(
-                r"\}\};? '+\(?(also|or)\)?'+ {{(hyph|hyphenation)\|\w{2,3}\|",
+                r"\}\};? '*\(?(also|or)\)?'* {{(hyph|hyphenation)\|\w{2,3}\|",
                 "||",
                 line,
             )
