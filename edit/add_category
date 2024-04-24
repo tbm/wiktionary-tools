@@ -7,8 +7,9 @@ Add category to Wiktionry entry
 import sys
 
 import click
-import kamusi
 import pywikibot
+
+import kamusi
 
 
 def check_category(site, category, lang):

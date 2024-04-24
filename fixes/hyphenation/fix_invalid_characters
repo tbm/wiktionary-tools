@@ -12,8 +12,9 @@ contain these characters.
 import sys
 
 import click
-import kamusi
 import pywikibot
+
+import kamusi
 
 
 def replace_invalid_hyph_characters(entry_name, entry):

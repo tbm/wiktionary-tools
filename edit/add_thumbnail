@@ -7,9 +7,10 @@ Add thumbnail to Wiktionry entry
 import sys
 
 import click
-import kamusi
 import pywikibot
 import requests
+
+import kamusi
 
 
 def check_commons(page):

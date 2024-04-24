@@ -12,8 +12,9 @@ import re
 import sys
 
 import click
-import kamusi
 import pywikibot
+
+import kamusi
 
 
 def merge_hyph(entry):
