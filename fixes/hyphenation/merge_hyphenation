@@ -23,7 +23,7 @@ def merge_hyph(entry):
     """
     for line in entry.splitlines():
         if "{{hyph" in line:
-            line = line.replace("|nocaption=1", "")
+            line = re.sub(r"\|nocaption=(1|y|yes)", "", line)
             line = re.sub(
                 r"\}\};? '+\(?(also|or)\)?'+ {{(hyph|hyphenation)\|\w{2,3}\|",
                 "||",
