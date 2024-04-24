@@ -7,6 +7,9 @@ This will replace · with |.
 
 It will also replace . and - with | if the page name doesn't
 contain these characters.
+
+See checks/hyphenation/check_invalid_characters for a script
+that can find entries with such invalid characters.
 """
 
 import sys
