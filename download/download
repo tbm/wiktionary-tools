@@ -28,6 +28,9 @@ def download(lang, out):
     for page in lemmas.articles():
         print(page.title())
         text = kamusi.get_entry(page.text, lang, strip=True)
+        if not text:
+            print("Can't get entry for", page.title())
+            continue
         outfile = out / Path(page.title().replace("/", "_"))
         with open(outfile, "w", encoding="utf-8") as outfile:
             print(text, file=outfile)
