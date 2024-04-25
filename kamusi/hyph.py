@@ -19,8 +19,8 @@ def get_hyphenations(entry):
             if template.name in ("hyph", "hyphenation"):
                 hyph = "|".join(str(p) for p in template.params[1:] if not p.showkey)
                 for pattern in hyph.split("||"):
-                    yield pattern
+                    yield pattern.split("|")
             elif template.name == "pl-p":
                 for param in template.params:
                     if param.name.strip() in ("h", "h1", "h2", "h3"):
-                        yield param.value.strip().replace(".", "|")
+                        yield param.value.strip().split(".")
