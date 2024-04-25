@@ -41,3 +41,30 @@ def test_double_pattern_in_two():
     )
     hyph = ["apo|s|t|ro|phie|ren", "apo|stro|phie|ren"]
     assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_no_pattern_pl():
+    """
+    Test case for a Polish template without hyphenation
+    """
+    pattern = "{{pl-p|a=LL-Q809 (pol)-Olaf-pożywić.wav}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_pl():
+    """
+    Test case for a Polish template with one hyphenation
+    """
+    pattern = "{{pl-p|de'ko.rum|h=de.co.rum}}"
+    hyph = ["de|co|rum"]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_double_pattern_pl():
+    """
+    Test case for a Polish template with two hyphenations
+    """
+    pattern = "{{pl-p|'prze.r-znąć|'przer.znąć|h1=prze.rznąć|h2=przer.znąć}}"
+    hyph = ["prze|rznąć", "przer|znąć"]
+    assert list(get_hyphenations(pattern)) == hyph
