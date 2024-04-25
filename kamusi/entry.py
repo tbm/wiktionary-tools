@@ -17,7 +17,7 @@ def get_entry(text, lang, strip=False):
     text = text[start:]
     end = re.search(r"\n==[^=]", text)
     if end:
-        text = text[: end.start()+1]
+        text = text[: end.start() + 1]
     if strip:
         return text.rstrip()
     return text
