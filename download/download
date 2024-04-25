@@ -7,11 +7,24 @@ Download pages
 import re
 from pathlib import Path
 import sys
+import time
 
 import click
 import pywikibot
 
 import kamusi
+
+
+def get_text(page):
+    """
+    Get the text from a Wikimedia page - try again if there's a server error
+    """
+    try:
+        return page.text
+    except pywikibot.exceptions.ServerError:
+        print("Sleeping before trying again...")
+        time.sleep(20)
+        return get_text(page)
 
 
 @click.command()
@@ -27,7 +40,7 @@ def download(lang, out):
     lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
-        text = kamusi.get_entry(page.text, lang, strip=True)
+        text = kamusi.get_entry(get_text(page), lang, strip=True)
         if not text:
             print("Can't get entry for", page.title())
             continue
