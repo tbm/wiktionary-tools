@@ -9,9 +9,9 @@ from pathlib import Path
 import sys
 
 import click
-import kamusi
-from mediawiki_langcodes import code_to_name
 import pywikibot
+
+import kamusi
 
 
 @click.command()
@@ -24,7 +24,7 @@ def download(lang, out):
     out = Path(out)
     Path.mkdir(out, exist_ok=True)
     site = pywikibot.Site("en", "wiktionary")
-    lemmas = pywikibot.Category(site, code_to_name(lang, "en") + "_lemmas")
+    lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
         text = kamusi.get_entry(page.text, lang, strip=True)
