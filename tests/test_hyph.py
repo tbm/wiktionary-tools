@@ -111,3 +111,9 @@ def test_hyph_is_valid_de():
     """
     assert Hyphenation("Glocke", ["Glok", "ke"], "de").is_valid()
     assert Hyphenation("Hecke", ["Hek", "ke"], "de").is_valid()
+
+def test_hyph_is_valid_yi():
+    """
+    Test is_valid() for Yiddish
+    """
+    assert Hyphenation("קרעבס־עסער", ["קרעבס", "ע", "סער"], "yi").is_valid()
