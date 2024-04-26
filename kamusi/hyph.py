@@ -123,6 +123,17 @@ class Hyphenation:
             # that, accept the pattern if it matches one of the words.
             if hyph_str in self.word.split(" "):
                 return True
+        elif self.lang == "hu":
+            if self.word.replace("ccs", "cscs") == hyph_str:
+                return True
+            elif self.word.replace("lly", "lyly") == hyph_str:
+                return True
+            elif self.word.replace("nny", "nyny") == hyph_str:
+                return True
+            elif self.word.replace("ssz", "szsz") == hyph_str:
+                return True
+            elif self.word.replace("tty", "tyty") == hyph_str:
+                return True
         elif self.lang == "nl":
             if remove_diacritics(self.word) == hyph_str:
                 return True

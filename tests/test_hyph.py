@@ -125,6 +125,17 @@ def test_hyph_is_valid_de():
     assert Hyphenation("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
 
 
+def test_hyph_is_valid_hu():
+    """
+    Test is_valid() for Hungarian
+    """
+    assert Hyphenation("üccsi", ["ücs", "csi"], "hu").is_valid()
+    assert Hyphenation("süllyed", ["süly", "lyed"], "hu").is_valid()
+    assert Hyphenation("vinnyog", ["viny", "nyog"], "hu").is_valid()
+    assert Hyphenation("ősszel", ["ősz", "szel"], "hu").is_valid()
+    assert Hyphenation("szattyán", ["szaty", "tyán"], "hu").is_valid()
+
+
 def test_hyph_is_valid_nl():
     """
     Test is_valid() for Dutch
