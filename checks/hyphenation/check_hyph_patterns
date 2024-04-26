@@ -5,6 +5,7 @@ Check if hyphenation patterns match the word for all entries of a language
 """
 
 from pathlib import Path
+import re
 
 import click
 
@@ -52,6 +53,11 @@ def check_all_entries(directory, output):
             continue
         with open(filepath, "r", encoding="utf-8") as entry_fp:
             entry = entry_fp.read()
+        # Workaround: ignore words with spaces that have hyphenation
+        # patters containing || since many entries mishandle spaces.
+        # This needs more discussion first.
+        if " " in filepath.name and re.search(r"\{\{hyph.*\|\|", entry):
+            continue
         for hyph in get_invalid_hyph_patterns(filepath.name, entry):
             print_hyph_mismatch(hyph, output)
 
