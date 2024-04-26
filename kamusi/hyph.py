@@ -126,6 +126,11 @@ class Hyphenation:
         elif self.lang == "nl":
             if remove_diacritics(self.word) == hyph_str:
                 return True
+        elif self.lang == "sq":
+            # It seems the hypenations have more diacritics than the
+            # original word
+            if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+                return True
         elif self.lang == "yi":
             if self.word.replace("־", "") == hyph_str:
                 return True
