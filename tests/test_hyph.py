@@ -226,6 +226,14 @@ def test_hyph_is_valid_hu():
     assert Hyphenation("szattyán", ["szaty", "tyán"], "hu").is_valid()
 
 
+def test_hyph_is_valid_it():
+    """
+    Test is_valid() for Italian
+    """
+    assert Hyphenation("adenoidea", ["a", "de", "noi", "dè", "a"], "it").is_valid()
+    assert Hyphenation("biroldo", ["bi", "ról", "do"], "it").is_valid()
+
+
 def test_hyph_is_valid_nl():
     """
     Test is_valid() for Dutch

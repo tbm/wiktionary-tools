@@ -139,6 +139,9 @@ class Hyphenation:
                 return True
             elif self.word.replace("tty", "tyty") == hyph_str:
                 return True
+        elif self.lang == "it":
+            if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+                return True
         elif self.lang == "nl":
             if remove_diacritics(self.word) == hyph_str:
                 return True
