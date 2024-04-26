@@ -131,13 +131,13 @@ class Hyphenation:
         elif self.lang == "hu":
             if self.word.replace("ccs", "cscs") == hyph_str:
                 return True
-            elif self.word.replace("lly", "lyly") == hyph_str:
+            if self.word.replace("lly", "lyly") == hyph_str:
                 return True
-            elif self.word.replace("nny", "nyny") == hyph_str:
+            if self.word.replace("nny", "nyny") == hyph_str:
                 return True
-            elif self.word.replace("ssz", "szsz") == hyph_str:
+            if self.word.replace("ssz", "szsz") == hyph_str:
                 return True
-            elif self.word.replace("tty", "tyty") == hyph_str:
+            if self.word.replace("tty", "tyty") == hyph_str:
                 return True
         elif self.lang == "it":
             if remove_diacritics(self.word) == remove_diacritics(hyph_str):
