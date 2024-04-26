@@ -13,31 +13,24 @@ __license__ = "GPL-3.0-or-later"
 from pathlib import Path
 
 import click
-import mwparserfromhell
+
+import kamusi
 
 
 def check_hyph_chars(entry_name, entry):
     """
     Check an entry for invalid characters in the hyphentation info
     """
-    for line in entry.splitlines():
-        if "{{hyph" not in line:
-            continue
-        wikicode = mwparserfromhell.parse(line)
-        templates = wikicode.filter_templates()
-        for template in templates:
-            if template.name not in ("hyph", "hyphenation"):
-                continue
-            params = [str(p) for p in template.params if not p.showkey]
-            hyph = "".join(params[1:])
-            if "·" in line:
-                print(entry_name, "invalid character:", hyph)
-            if "-" in hyph and "-" not in entry_name:
-                print(entry_name, "invalid character:", hyph)
-            if "." in hyph and "." not in entry_name:
-                print(entry_name, "invalid character:", hyph)
-            if "," in hyph and "," not in entry_name:
-                print(entry_name, "invalid character:", hyph)
+    for pattern in kamusi.get_hyphenations(entry):
+        hyph = "".join(pattern)
+        if "·" in hyph:
+            print(entry_name, "invalid character:", hyph)
+        if "-" in hyph and "-" not in entry_name:
+            print(entry_name, "invalid character:", hyph)
+        if "." in hyph and "." not in entry_name:
+            print(entry_name, "invalid character:", hyph)
+        if "," in hyph and "," not in entry_name:
+            print(entry_name, "invalid character:", hyph)
 
 
 @click.command()
