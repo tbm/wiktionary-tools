@@ -104,3 +104,10 @@ def test_hyph_is_valid_ca():
     Test is_valid() for Catalan
     """
     assert Hyphenation("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
+
+def test_hyph_is_valid_de():
+    """
+    Test is_valid() for German
+    """
+    assert Hyphenation("Glocke", ["Glok", "ke"], "de").is_valid()
+    assert Hyphenation("Hecke", ["Hek", "ke"], "de").is_valid()

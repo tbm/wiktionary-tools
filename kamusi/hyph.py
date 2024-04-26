@@ -72,4 +72,8 @@ class Hyphenation:
         if self.lang == "ca":
             if self.word.replace("·", "") == "".join(self.hyph):
                 return True
+        elif self.lang == "de":
+            # Pre German orthography reform of 1996, "ck" became "kk"
+            if self.word.replace("ck", "kk") == "".join(self.hyph):
+                return True
         return False
