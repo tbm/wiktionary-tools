@@ -98,6 +98,23 @@ class Hyphenation:
             return self.word == other.word and self.hyph == other.hyph
         return False
 
+    @classmethod
+    def create(cls, word, hyph, lang):
+        """
+        Instantiate the right subclass depending on the language
+        """
+        lang_subclasses = {
+            "ca": HyphenationCA,
+            "de": HyphenationDE,
+            "hu": HyphenationHU,
+            "it": HyphenationIT,
+            "nl": HyphenationNL,
+            "sq": HyphenationSQ,
+            "yi": HyphenationYI,
+        }
+        subclass = lang_subclasses.get(lang, cls)
+        return subclass(word, hyph, lang)
+
     def is_valid(self):
         """
         Check if a hyphenation pattern matches the word
@@ -115,44 +132,116 @@ class Hyphenation:
         if strip_punctuation(self.word) == strip_punctuation(hyph_str):
             return True
         # Some language-specific rules
-        if self.lang == "ca":
-            if self.word.replace("·", "") == hyph_str:
-                return True
-        elif self.lang == "de":
-            # Pre German orthography reform of 1996, "ck" became "kk"
-            if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
-                return True
-        elif self.lang == "el":
+        if self.lang == "el":
             # Workaround: Greek uses separate hyph templates when a phrase
             # contains multiple words; pending discussion on how to handle
             # that, accept the pattern if it matches one of the words.
             if hyph_str in self.word.split(" "):
                 return True
-        elif self.lang == "hu":
-            hu_replacements = {
-                "ccs": "cscs",
-                "lly": "lyly",
-                "nny": "nyny",
-                "ssz": "szsz",
-                "tty": "tyty",
-            }
-            modified_word = self.word
-            for orig, repl in hu_replacements.items():
-                modified_word = modified_word.replace(orig, repl)
-            if modified_word == hyph_str:
-                return True
-        elif self.lang == "it":
-            if remove_diacritics(self.word) == remove_diacritics(hyph_str):
-                return True
-        elif self.lang == "nl":
-            if remove_diacritics(self.word) == hyph_str:
-                return True
-        elif self.lang == "sq":
-            # It seems the hypenations have more diacritics than the
-            # original word
-            if remove_diacritics(self.word) == remove_diacritics(hyph_str):
-                return True
-        elif self.lang == "yi":
-            if self.word.replace("־", "") == hyph_str:
-                return True
+        return False
+
+
+class HyphenationCA(Hyphenation):
+    """
+    Hyphenation module for Catalan
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        if self.word.replace("·", "") == "".join(self.hyph):
+            return True
+        return False
+
+
+class HyphenationDE(Hyphenation):
+    """
+    Hyphenation module for German
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        # Pre German orthography reform of 1996, "ck" became "kk"
+        if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
+            return True
+        return False
+
+
+class HyphenationHU(Hyphenation):
+    """
+    Hyphenation module for Hungarian
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        hu_replacements = {
+            "ccs": "cscs",
+            "lly": "lyly",
+            "nny": "nyny",
+            "ssz": "szsz",
+            "tty": "tyty",
+        }
+        modified_word = self.word
+        for orig, repl in hu_replacements.items():
+            modified_word = modified_word.replace(orig, repl)
+        if modified_word == "".join(self.hyph):
+            return True
+        return False
+
+
+class HyphenationIT(Hyphenation):
+    """
+    Hyphenation module for Italian
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        hyph_str = "".join(self.hyph)
+        if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+            return True
+        return False
+
+
+class HyphenationNL(Hyphenation):
+    """
+    Hyphenation module for Dutch
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        if remove_diacritics(self.word) == "".join(self.hyph):
+            return True
+        return False
+
+
+class HyphenationSQ(Hyphenation):
+    """
+    Hyphenation module for Albanian
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        # It seems the hypenations have more diacritics than the
+        # original word
+        hyph_str = "".join(self.hyph)
+        if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+            return True
+        return False
+
+
+class HyphenationYI(Hyphenation):
+    """
+    Hyphenation module for Yiddish
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        if self.word.replace("־", "") == "".join(self.hyph):
+            return True
         return False

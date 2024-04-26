@@ -203,48 +203,50 @@ def test_hyph_is_valid_ca():
     """
     Test is_valid() for Catalan
     """
-    assert Hyphenation("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
+    assert Hyphenation.create("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
 
 
 def test_hyph_is_valid_de():
     """
     Test is_valid() for German
     """
-    assert Hyphenation("Glocke", ["Glok", "ke"], "de").is_valid()
-    assert Hyphenation("Hecke", ["Hek", "ke"], "de").is_valid()
-    assert Hyphenation("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
+    assert Hyphenation.create("Glocke", ["Glok", "ke"], "de").is_valid()
+    assert Hyphenation.create("Hecke", ["Hek", "ke"], "de").is_valid()
+    assert Hyphenation.create("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
 
 
 def test_hyph_is_valid_hu():
     """
     Test is_valid() for Hungarian
     """
-    assert Hyphenation("üccsi", ["ücs", "csi"], "hu").is_valid()
-    assert Hyphenation("süllyed", ["süly", "lyed"], "hu").is_valid()
-    assert Hyphenation("vinnyog", ["viny", "nyog"], "hu").is_valid()
-    assert Hyphenation("ősszel", ["ősz", "szel"], "hu").is_valid()
-    assert Hyphenation("szattyán", ["szaty", "tyán"], "hu").is_valid()
+    assert Hyphenation.create("üccsi", ["ücs", "csi"], "hu").is_valid()
+    assert Hyphenation.create("süllyed", ["süly", "lyed"], "hu").is_valid()
+    assert Hyphenation.create("vinnyog", ["viny", "nyog"], "hu").is_valid()
+    assert Hyphenation.create("ősszel", ["ősz", "szel"], "hu").is_valid()
+    assert Hyphenation.create("szattyán", ["szaty", "tyán"], "hu").is_valid()
 
 
 def test_hyph_is_valid_it():
     """
     Test is_valid() for Italian
     """
-    assert Hyphenation("adenoidea", ["a", "de", "noi", "dè", "a"], "it").is_valid()
-    assert Hyphenation("biroldo", ["bi", "ról", "do"], "it").is_valid()
+    assert Hyphenation.create(
+        "adenoidea", ["a", "de", "noi", "dè", "a"], "it"
+    ).is_valid()
+    assert Hyphenation.create("biroldo", ["bi", "ról", "do"], "it").is_valid()
 
 
 def test_hyph_is_valid_nl():
     """
     Test is_valid() for Dutch
     """
-    assert Hyphenation("Caïro", ["Ca", "i", "ro"], "nl").is_valid()
-    assert Hyphenation("Chassébuurt", ["Chas", "se", "buurt"], "nl").is_valid()
-    assert Hyphenation("Daniël", ["Da", "ni", "el"], "nl").is_valid()
+    assert Hyphenation.create("Caïro", ["Ca", "i", "ro"], "nl").is_valid()
+    assert Hyphenation.create("Chassébuurt", ["Chas", "se", "buurt"], "nl").is_valid()
+    assert Hyphenation.create("Daniël", ["Da", "ni", "el"], "nl").is_valid()
 
 
 def test_hyph_is_valid_yi():
     """
     Test is_valid() for Yiddish
     """
-    assert Hyphenation("קרעבס־עסער", ["קרעבס", "ע", "סער"], "yi").is_valid()
+    assert Hyphenation.create("קרעבס־עסער", ["קרעבס", "ע", "סער"], "yi").is_valid()

@@ -18,7 +18,7 @@ def get_invalid_hyph_patterns(entry_name, entry, lang):
     (i.e. if the pattern matches the word).
     """
     for pattern in kamusi.get_hyphenations(entry):
-        hyph = kamusi.Hyphenation(entry_name, pattern, lang)
+        hyph = kamusi.Hyphenation.create(entry_name, pattern, lang)
         if not hyph.is_valid():
             yield hyph
 
