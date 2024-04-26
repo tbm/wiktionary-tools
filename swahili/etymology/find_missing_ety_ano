@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Find nouns that might be derived from a reciprocal verb (e.g. uhusiano
 from -husiana).
 """
+
+__license__ = "GPL-3.0-or-later"
 
 from pathlib import Path
 

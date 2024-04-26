@@ -1,6 +1,12 @@
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Functions to work with Wiktionary entries
 """
+
+__license__ = "GPL-3.0-or-later"
 
 import re
 

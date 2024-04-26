@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Check if hyphenation patterns match the word for all entries of a language
 """
+
+__license__ = "GPL-3.0-or-later"
 
 from pathlib import Path
 import re

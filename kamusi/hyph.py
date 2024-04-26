@@ -1,6 +1,12 @@
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Functions related to hyphenation patterns
 """
+
+__license__ = "GPL-3.0-or-later"
 
 import re
 import string
