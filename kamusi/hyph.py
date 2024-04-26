@@ -191,6 +191,7 @@ class HyphenationHU(Hyphenation):
             return True
         hu_replacements = {
             "ccs": "cscs",
+            "ggy": "gygy",
             "lly": "lyly",
             "nny": "nyny",
             "ssz": "szsz",

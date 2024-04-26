@@ -276,6 +276,7 @@ def test_hyph_is_valid_hu():
     Test is_valid() for Hungarian
     """
     assert Hyphenation.create("üccsi", ["ücs", "csi"], "hu").is_valid()
+    assert Hyphenation.create("biggyeszt", ["bigy", "gyeszt"], "hu").is_valid()
     assert Hyphenation.create("süllyed", ["süly", "lyed"], "hu").is_valid()
     assert Hyphenation.create("vinnyog", ["viny", "nyog"], "hu").is_valid()
     assert Hyphenation.create("ősszel", ["ősz", "szel"], "hu").is_valid()
