@@ -26,6 +26,21 @@ def get_hyphenations(entry):
                         yield param.value.strip().split(".")
 
 
+def convert_german_kk_to_ck(hyph):
+    """
+    Pre the German orthography reform of 1996, "ck" became "kk" during
+    hyphenation.  Let's change the "kk" back to "ck" so we can compare
+    the hyphenation pattern with the original word.
+    """
+    result = []
+    # If both current and next word starts/ends with 'k', replace it with 'c' in current word
+    for i, word in enumerate(hyph):
+        if i < len(hyph) - 1 and hyph[i].endswith("k") and hyph[i + 1].startswith("k"):
+            word = word[:-1] + "c"
+        result.append(word)
+    return result
+
+
 class Hyphenation:
     """
     Class for hyphenations
@@ -74,7 +89,7 @@ class Hyphenation:
                 return True
         elif self.lang == "de":
             # Pre German orthography reform of 1996, "ck" became "kk"
-            if self.word.replace("ck", "kk") == "".join(self.hyph):
+            if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
                 return True
         elif self.lang == "yi":
             if self.word.replace("־", "") == "".join(self.hyph):

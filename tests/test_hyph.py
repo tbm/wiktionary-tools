@@ -111,6 +111,7 @@ def test_hyph_is_valid_de():
     """
     assert Hyphenation("Glocke", ["Glok", "ke"], "de").is_valid()
     assert Hyphenation("Hecke", ["Hek", "ke"], "de").is_valid()
+    assert Hyphenation("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
 
 def test_hyph_is_valid_yi():
     """
