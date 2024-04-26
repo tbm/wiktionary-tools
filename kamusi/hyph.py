@@ -94,6 +94,13 @@ class Hyphenation:
         # Spaces are not handled uniformly, so let's ignore them for now
         if self.word.replace(" ", "") == "".join(self.hyph).replace(" ", ""):
             return True
+        # Ignore certain characters
+        if self.word.replace(",", "") == "".join(self.hyph):
+            return True
+        if self.word.replace(", ", "") == "".join(self.hyph):
+            return True
+        if self.word.replace("'", "") == "".join(self.hyph):
+            return True
         # Some language-specific rules
         if self.lang == "ca":
             if self.word.replace("·", "") == "".join(self.hyph):
