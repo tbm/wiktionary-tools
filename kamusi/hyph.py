@@ -2,6 +2,8 @@
 Functions related to hyphenation patterns
 """
 
+import unicodedata
+
 import mwparserfromhell
 
 
@@ -39,6 +41,15 @@ def convert_german_kk_to_ck(hyph):
             word = word[:-1] + "c"
         result.append(word)
     return result
+
+
+def remove_diacritics(text):
+    """
+    Remove diacritics from a string
+    """
+    norm_text = unicodedata.normalize("NFD", text)
+    shaved = "".join(c for c in norm_text if not unicodedata.combining(c))
+    return unicodedata.normalize("NFC", shaved)
 
 
 class Hyphenation:
@@ -90,6 +101,9 @@ class Hyphenation:
         elif self.lang == "de":
             # Pre German orthography reform of 1996, "ck" became "kk"
             if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
+                return True
+        elif self.lang == "nl":
+            if remove_diacritics(self.word) == "".join(self.hyph):
                 return True
         elif self.lang == "yi":
             if self.word.replace("־", "") == "".join(self.hyph):

@@ -99,11 +99,13 @@ def test_hyph_is_valid_permissive():
     assert Hyphenation("Saint-Pierre", ["Saint", "Pierre"])
     assert Hyphenation("arménien ancien", ["ar", "mé", "nien", "an", "cien"])
 
+
 def test_hyph_is_valid_ca():
     """
     Test is_valid() for Catalan
     """
     assert Hyphenation("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
+
 
 def test_hyph_is_valid_de():
     """
@@ -112,6 +114,16 @@ def test_hyph_is_valid_de():
     assert Hyphenation("Glocke", ["Glok", "ke"], "de").is_valid()
     assert Hyphenation("Hecke", ["Hek", "ke"], "de").is_valid()
     assert Hyphenation("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
+
+
+def test_hyph_is_valid_nl():
+    """
+    Test is_valid() for Dutch
+    """
+    assert Hyphenation("Caïro", ["Ca", "i", "ro"], "nl").is_valid()
+    assert Hyphenation("Chassébuurt", ["Chas", "se", "buurt"], "nl").is_valid()
+    assert Hyphenation("Daniël", ["Da", "ni", "el"], "nl").is_valid()
+
 
 def test_hyph_is_valid_yi():
     """
