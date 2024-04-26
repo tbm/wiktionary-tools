@@ -11,7 +11,7 @@ import click
 import kamusi
 
 
-def check_hyph_pattern(entry_name, entry):
+def get_invalid_hyph_patterns(entry_name, entry):
     """
     For all hyphenation patterns found in an entry, check if it is valid
     (i.e. if the pattern matches the word).
@@ -19,12 +19,31 @@ def check_hyph_pattern(entry_name, entry):
     for pattern in kamusi.get_hyphenations(entry):
         hyph = kamusi.Hyphenation(entry_name, pattern)
         if not hyph.is_valid():
-            print(f"Mismatch: {entry_name} vs {''.join(hyph.get_hyph())}")
+            yield hyph
+
+
+def print_hyph_mismatch(hyph, output_format):
+    """
+    Print a hyphenation mismatch according to different output formats
+    """
+    hyph_str = "".join(hyph.get_hyph())
+    if output_format == "text":
+        print(f"Mismatch: {hyph.get_word()} vs {hyph_str}")
+    elif output_format == "csv":
+        print(hyph.get_word() + "\t" + hyph_str)
+    elif output_format == "wiki":
+        print("| [[" + hyph.get_word() + "]] || " + hyph_str)
+        print("|-")
+    else:
+        print("Unknown format ", output_format)
 
 
 @click.command()
 @click.argument("directory")
-def check_all_entries(directory):
+@click.option(
+    "--output", type=str, required=False, default="text", help="Output format"
+)
+def check_all_entries(directory, output):
     """
     Check all entries in the directory
     """
@@ -33,7 +52,8 @@ def check_all_entries(directory):
             continue
         with open(filepath, "r", encoding="utf-8") as entry_fp:
             entry = entry_fp.read()
-        check_hyph_pattern(filepath.name, entry)
+        for hyph in get_invalid_hyph_patterns(filepath.name, entry):
+            print_hyph_mismatch(hyph, output)
 
 
 if __name__ == "__main__":
