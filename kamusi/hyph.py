@@ -50,6 +50,11 @@ class Hyphenation:
     def __str__(self):
         return self.word + ": " + "·".join(self.hyph)
 
+    def __eq__(self, other):
+        if isinstance(other, Hyphenation):
+            return self.word == other.word and self.hyph == other.hyph
+        return False
+
     def is_valid(self):
         """
         Check if a hyphenation pattern matches the word

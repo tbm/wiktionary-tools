@@ -76,3 +76,17 @@ def test_hyph_is_valid():
     """
     assert Hyphenation("abbrechen", ["ab", "bre", "chen"]).is_valid()
     assert not Hyphenation("wrong", ["ab", "bre", "chen"]).is_valid()
+
+
+def test_hyph_eq():
+    """
+    Test whether Hyphenation() instances are equal
+    """
+    hyph1 = Hyphenation("abbrechen", ["ab", "bre", "chen"])
+    hyph2 = Hyphenation("vorleisten", ["vor", "leis", "ten"])
+    hyph3 = Hyphenation("vorleisten", ["vor", "lei", "sten"])
+    hyph4 = Hyphenation("vorleisten", ["vor", "lei", "sten"])
+    assert hyph1 == hyph1  # pylint: disable=comparison-with-itself
+    assert hyph1 != hyph2
+    assert hyph2 != hyph3
+    assert hyph3 == hyph4
