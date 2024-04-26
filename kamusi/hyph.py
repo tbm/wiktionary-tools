@@ -97,29 +97,30 @@ class Hyphenation:
         """
         Check if a hyphenation pattern matches the word
         """
-        if self.word == "".join(self.hyph):
+        hyph_str = "".join(self.hyph)
+        if self.word == hyph_str:
             return True
         # It's not clear what to do about hyphens, so accept this for now
-        if self.word.replace("-", "") == "".join(self.hyph):
+        if self.word.replace("-", "") == hyph_str:
             return True
         # Spaces are not handled uniformly, so let's ignore them for now
-        if self.word.replace(" ", "") == "".join(self.hyph).replace(" ", ""):
+        if self.word.replace(" ", "") == hyph_str.replace(" ", ""):
             return True
         # Ignore certain characters
-        if strip_punctuation(self.word) == strip_punctuation("".join(self.hyph)):
+        if strip_punctuation(self.word) == strip_punctuation(hyph_str):
             return True
         # Some language-specific rules
         if self.lang == "ca":
-            if self.word.replace("·", "") == "".join(self.hyph):
+            if self.word.replace("·", "") == hyph_str:
                 return True
         elif self.lang == "de":
             # Pre German orthography reform of 1996, "ck" became "kk"
             if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
                 return True
         elif self.lang == "nl":
-            if remove_diacritics(self.word) == "".join(self.hyph):
+            if remove_diacritics(self.word) == hyph_str:
                 return True
         elif self.lang == "yi":
-            if self.word.replace("־", "") == "".join(self.hyph):
+            if self.word.replace("־", "") == hyph_str:
                 return True
         return False
