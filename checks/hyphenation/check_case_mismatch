@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Find wrong case in hyphenation patterns
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+
+import click
+
+import kamusi
+
+
+def check_hyph_case(entry_name, entry):
+    """
+    Check an entry for wrong case in the hyphentation info
+    """
+    for pattern in kamusi.get_hyphenations(entry):
+        hyph = "".join(pattern)
+        if hyph[0] != entry_name[0] and hyph[0].upper() == entry_name[0].upper():
+            print(entry_name, "wrong case:", hyph)
+
+
+@click.command()
+@click.argument("directory")
+def check_all_entries(directory):
+    """
+    Check all entries in the directory
+    """
+    for filepath in sorted(Path(directory).glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check_hyph_case(filepath.name, entry)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
