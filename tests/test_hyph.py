@@ -206,13 +206,24 @@ def test_hyph_is_valid_ca():
     assert Hyphenation.create("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
 
 
-def test_hyph_is_valid_de():
+def test_hyph_is_valid_de_ck_kk():
     """
-    Test is_valid() for German
+    Test is_valid() for German for the ck -> kk change
     """
     assert Hyphenation.create("Glocke", ["Glok", "ke"], "de").is_valid()
     assert Hyphenation.create("Hecke", ["Hek", "ke"], "de").is_valid()
     assert Hyphenation.create("Muckefuck", ["Muk", "ke", "fuck"], "de").is_valid()
+
+
+def test_hyph_is_valid_de_exceptions():
+    """
+    Test is_valid() for special cases in German
+    """
+    assert Hyphenation.create("dämmrig", ["däm", "me", "rig"], "de").is_valid()
+    assert Hyphenation.create("Brennessel", ["Brenn", "nes", "sel"], "de").is_valid()
+    assert Hyphenation.create(
+        "justiziabel", ["ju", "sti", "tia", "bel"], "de"
+    ).is_valid()
 
 
 def test_hyph_is_valid_hu():

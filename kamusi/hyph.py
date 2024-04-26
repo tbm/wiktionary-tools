@@ -165,6 +165,13 @@ class HyphenationDE(Hyphenation):
         # Pre German orthography reform of 1996, "ck" became "kk"
         if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
             return True
+        unusual_hyph = {
+            "dämmrig": "dämmerig",
+            "Brennessel": "Brennnessel",
+            "justiziabel": "justitiabel",
+        }
+        if unusual_hyph.get(self.word) == "".join(self.hyph):
+            return True
         return False
 
 
