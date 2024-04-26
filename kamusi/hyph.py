@@ -61,4 +61,10 @@ class Hyphenation:
         """
         if self.word == "".join(self.hyph):
             return True
+        # It's not clear what to do about hyphens, so accept this for now
+        if self.word.replace("-", "") == "".join(self.hyph):
+            return True
+        # Spaces are not handled uniformly, so let's ignore them for now
+        if self.word.replace(" ", "") == "".join(self.hyph).replace(" ", ""):
+            return True
         return False

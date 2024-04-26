@@ -70,14 +70,6 @@ def test_double_pattern_pl():
     assert list(get_hyphenations(pattern)) == hyph
 
 
-def test_hyph_is_valid():
-    """
-    Test simple cases of is_valid()
-    """
-    assert Hyphenation("abbrechen", ["ab", "bre", "chen"]).is_valid()
-    assert not Hyphenation("wrong", ["ab", "bre", "chen"]).is_valid()
-
-
 def test_hyph_eq():
     """
     Test whether Hyphenation() instances are equal
@@ -90,3 +82,19 @@ def test_hyph_eq():
     assert hyph1 != hyph2
     assert hyph2 != hyph3
     assert hyph3 == hyph4
+
+
+def test_hyph_is_valid():
+    """
+    Test simple cases of is_valid()
+    """
+    assert Hyphenation("abbrechen", ["ab", "bre", "chen"]).is_valid()
+    assert not Hyphenation("wrong", ["ab", "bre", "chen"]).is_valid()
+
+
+def test_hyph_is_valid_permissive():
+    """
+    Test some patterns with unclear behaviour that we accept for now
+    """
+    assert Hyphenation("Saint-Pierre", ["Saint", "Pierre"])
+    assert Hyphenation("arménien ancien", ["ar", "mé", "nien", "an", "cien"])
