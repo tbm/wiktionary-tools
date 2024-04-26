@@ -43,6 +43,51 @@ def test_double_pattern_in_two():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_empty_pattern_es():
+    """
+    Test case for a Spanish template without hyphenation
+    """
+    pattern = "{{es-pr}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_no_pattern_es():
+    """
+    Test case for a Spanish template without hyphenation
+    """
+    pattern = "{{es-pr|+,shóchil}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_plus_pattern_es():
+    """
+    Test case for a Spanish template with + hyphenation
+    """
+    pattern = "{{es-pr|adisoniano<hyph:+>}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_es():
+    """
+    Test case for a Spanish template with one hyphenation
+    """
+    pattern = "{{es-pr|Tlajiaco<hyph:Tla.xia.co>}}"
+    hyph = [["Tla", "xia", "co"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_double_pattern_es():
+    """
+    Test case for a Spanish template with two hyphenations
+    """
+    pattern = "{{es-pr|+<hyph:de.sam.pa.rar, des.am.pa.rar>}}"
+    hyph = [["de", "sam", "pa", "rar"], ["des", "am", "pa", "rar"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_no_pattern_pl():
     """
     Test case for a Polish template without hyphenation
