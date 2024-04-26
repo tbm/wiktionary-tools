@@ -88,6 +88,51 @@ def test_double_pattern_es():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_empty_pattern_it():
+    """
+    Test case for an Italian template without hyphenation
+    """
+    pattern = "{{it-pr}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_no_pattern_it():
+    """
+    Test case for an Italian template without hyphenation
+    """
+    pattern = "{{it-pr|òcimo}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_minus_pattern_it():
+    """
+    Test case for an Italian template with - hyphenation
+    """
+    pattern = "{{it-pr|pàssword<hyph:->}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_it():
+    """
+    Test case for an Italian template with one hyphenation
+    """
+    pattern = "{{it-pr|Kalèd<r:DiPI><hyph:Kha.led>}}"
+    hyph = [["Kha", "led"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_double_pattern_it():
+    """
+    Test case for an Italian template with two hyphenations
+    """
+    pattern = "{{it-pr|macète,macéte<hyph:ma.chè.te,ma.ché.te>}}"
+    hyph = [["ma", "chè", "te"], ["ma", "ché", "te"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_no_pattern_pl():
     """
     Test case for a Polish template without hyphenation
