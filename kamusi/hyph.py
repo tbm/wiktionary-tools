@@ -25,6 +25,8 @@ def get_hyphenations(entry):
             elif template.name == "pl-p":
                 for param in template.params:
                     if param.name.strip() in ("h", "h1", "h2", "h3"):
+                        if param.value.strip() == "-":
+                            continue
                         yield param.value.strip().split(".")
 
 

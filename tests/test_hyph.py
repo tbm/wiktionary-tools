@@ -52,6 +52,15 @@ def test_no_pattern_pl():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_none_pattern_pl():
+    """
+    Test case for a Polish template without hyphenation
+    """
+    pattern = "{{pl-p|atmosfera|h=-|r=-}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_single_pattern_pl():
     """
     Test case for a Polish template with one hyphenation
