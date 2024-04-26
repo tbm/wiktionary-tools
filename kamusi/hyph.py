@@ -2,6 +2,7 @@
 Functions related to hyphenation patterns
 """
 
+import string
 import unicodedata
 
 import mwparserfromhell
@@ -54,6 +55,14 @@ def remove_diacritics(text):
     return unicodedata.normalize("NFC", shaved)
 
 
+def strip_punctuation(text):
+    """
+    Strip punctuation from a string
+    """
+    translation_table = str.maketrans("", "", string.punctuation)
+    return text.translate(translation_table)
+
+
 class Hyphenation:
     """
     Class for hyphenations
@@ -97,11 +106,7 @@ class Hyphenation:
         if self.word.replace(" ", "") == "".join(self.hyph).replace(" ", ""):
             return True
         # Ignore certain characters
-        if self.word.replace(",", "") == "".join(self.hyph):
-            return True
-        if self.word.replace(", ", "") == "".join(self.hyph):
-            return True
-        if self.word.replace("'", "") == "".join(self.hyph):
+        if strip_punctuation(self.word) == strip_punctuation("".join(self.hyph)):
             return True
         # Some language-specific rules
         if self.lang == "ca":
