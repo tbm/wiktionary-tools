@@ -93,7 +93,7 @@ class Hyphenation:
 
     def get_hyph(self):
         """
-        Return the hypenation pattern (a list)
+        Return the hyphenation pattern (a list)
         """
         return self.hyph
 
@@ -238,7 +238,7 @@ class HyphenationSQ(Hyphenation):
     def is_valid(self):
         if super().is_valid():
             return True
-        # It seems the hypenations have more diacritics than the
+        # It seems the hyphenations have more diacritics than the
         # original word
         if remove_diacritics(self.word) == remove_diacritics(self.hyph_str):
             return True
