@@ -117,6 +117,12 @@ class Hyphenation:
             # Pre German orthography reform of 1996, "ck" became "kk"
             if self.word == "".join(convert_german_kk_to_ck(self.hyph)):
                 return True
+        elif self.lang == "el":
+            # Workaround: Greek uses separate hyph templates when a phrase
+            # contains multiple words; pending discussion on how to handle
+            # that, accept the pattern if it matches one of the words.
+            if hyph_str in self.word.split(" "):
+                return True
         elif self.lang == "nl":
             if remove_diacritics(self.word) == hyph_str:
                 return True
