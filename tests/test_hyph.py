@@ -133,6 +133,51 @@ def test_double_pattern_it():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_empty_pattern_fi():
+    """
+    Test case for a Finnish template without hyphenation
+    """
+    pattern = "{{fi-p}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_no_pattern_fi():
+    """
+    Test case for a Finnish template without hyphenation
+    """
+    pattern = "{{fi-p|kurkku-tauti}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_fi():
+    """
+    Test case for a Finnish template with one hyphenation
+    """
+    pattern = "{{fi-p|keres|h=Ce.res}}"
+    hyph = [["Ce", "res"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_fi_long():
+    """
+    Test case for a Finnish template with one hyphenation
+    """
+    pattern = "{{fi-pronunciation|tsodiakki|h=zo.di.ak.ki|r=ɑkːi}}"
+    hyph = [["zo", "di", "ak", "ki"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_double_pattern_fi():
+    """
+    Test case for a Finnish template with two hyphenations
+    """
+    pattern = "{{fi-p|gurka|gurkha|r1=urka|r2=urkha|h1=gur.kha|h2=gurk.ha}}"
+    hyph = [["gur", "kha"], ["gurk", "ha"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_no_pattern_pl():
     """
     Test case for a Polish template without hyphenation

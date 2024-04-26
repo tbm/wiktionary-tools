@@ -22,7 +22,7 @@ def get_hyphenations(entry):
     for line in entry.splitlines(keepends=True):
         # This is just a speed optimization over calling mwparserfromhell
         # on the whole entry
-        if not "{{hyph" in line and not "-pr" in line and not "{{pl-p" in line:
+        if not re.search(r"\{\{(hyph|es-pr|it-pr|fi-p|pl-p)", line):
             continue
         wikicode = mwparserfromhell.parse(line)
         for template in wikicode.filter_templates():
@@ -34,7 +34,7 @@ def get_hyphenations(entry):
                 if match := re.search("<hyph:([^+-][^>]+)>", str(template.params[0])):
                     for hyph in re.split(r",\s*", match.group(1)):
                         yield hyph.split(".")
-            elif template.name == "pl-p":
+            elif template.name in ("fi-p", "fi-pronunciation", "pl-p"):
                 for param in template.params:
                     if param.value.strip() == "-":
                         continue
