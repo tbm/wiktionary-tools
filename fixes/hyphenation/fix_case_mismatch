@@ -32,6 +32,13 @@ def fix_case_hyph_characters(entry_name, entry):
             if pattern[0].upper() == entry_name[0].upper():
                 pattern = entry_name[0] + pattern[1:]
             line = match.group(1) + pattern + "\n"
+        elif match := re.match(
+            r"(.*\{\{(fi-p|fi-pronunciation|pl-p)\|.*\|h\d?=)(.+)", line
+        ):
+            pattern = match.group(3)
+            if pattern[0].upper() == entry_name[0].upper():
+                pattern = entry_name[0] + pattern[1:]
+            line = match.group(1) + pattern + "\n"
         yield line
 
 
