@@ -77,6 +77,7 @@ class Hyphenation:
         self.word = word
         self.hyph = hyph
         self.lang = lang
+        self.hyph_str = "".join(self.hyph)
 
     def get_word(self):
         """
@@ -119,24 +120,23 @@ class Hyphenation:
         """
         Check if a hyphenation pattern matches the word
         """
-        hyph_str = "".join(self.hyph)
-        if self.word == hyph_str:
+        if self.word == self.hyph_str:
             return True
         # It's not clear what to do about hyphens, so accept this for now
-        if self.word.replace("-", "") == hyph_str:
+        if self.word.replace("-", "") == self.hyph_str:
             return True
         # Spaces are not handled uniformly, so let's ignore them for now
-        if self.word.replace(" ", "") == hyph_str.replace(" ", ""):
+        if self.word.replace(" ", "") == self.hyph_str.replace(" ", ""):
             return True
         # Ignore certain characters
-        if strip_punctuation(self.word) == strip_punctuation(hyph_str):
+        if strip_punctuation(self.word) == strip_punctuation(self.hyph_str):
             return True
         # Some language-specific rules
         if self.lang == "el":
             # Workaround: Greek uses separate hyph templates when a phrase
             # contains multiple words; pending discussion on how to handle
             # that, accept the pattern if it matches one of the words.
-            if hyph_str in self.word.split(" "):
+            if self.hyph_str in self.word.split(" "):
                 return True
         return False
 
@@ -149,7 +149,7 @@ class HyphenationCA(Hyphenation):
     def is_valid(self):
         if super().is_valid():
             return True
-        if self.word.replace("·", "") == "".join(self.hyph):
+        if self.word.replace("·", "") == self.hyph_str:
             return True
         return False
 
@@ -170,7 +170,7 @@ class HyphenationDE(Hyphenation):
             "Brennessel": "Brennnessel",
             "justiziabel": "justitiabel",
         }
-        if unusual_hyph.get(self.word) == "".join(self.hyph):
+        if unusual_hyph.get(self.word) == self.hyph_str:
             return True
         return False
 
@@ -193,7 +193,7 @@ class HyphenationHU(Hyphenation):
         modified_word = self.word
         for orig, repl in hu_replacements.items():
             modified_word = modified_word.replace(orig, repl)
-        if modified_word == "".join(self.hyph):
+        if modified_word == self.hyph_str:
             return True
         return False
 
@@ -206,8 +206,7 @@ class HyphenationIT(Hyphenation):
     def is_valid(self):
         if super().is_valid():
             return True
-        hyph_str = "".join(self.hyph)
-        if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+        if remove_diacritics(self.word) == remove_diacritics(self.hyph_str):
             return True
         return False
 
@@ -220,7 +219,7 @@ class HyphenationNL(Hyphenation):
     def is_valid(self):
         if super().is_valid():
             return True
-        if remove_diacritics(self.word) == "".join(self.hyph):
+        if remove_diacritics(self.word) == self.hyph_str:
             return True
         return False
 
@@ -235,8 +234,7 @@ class HyphenationSQ(Hyphenation):
             return True
         # It seems the hypenations have more diacritics than the
         # original word
-        hyph_str = "".join(self.hyph)
-        if remove_diacritics(self.word) == remove_diacritics(hyph_str):
+        if remove_diacritics(self.word) == remove_diacritics(self.hyph_str):
             return True
         return False
 
@@ -249,6 +247,6 @@ class HyphenationYI(Hyphenation):
     def is_valid(self):
         if super().is_valid():
             return True
-        if self.word.replace("־", "") == "".join(self.hyph):
+        if self.word.replace("־", "") == self.hyph_str:
             return True
         return False
