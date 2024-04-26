@@ -98,3 +98,9 @@ def test_hyph_is_valid_permissive():
     """
     assert Hyphenation("Saint-Pierre", ["Saint", "Pierre"])
     assert Hyphenation("arménien ancien", ["ar", "mé", "nien", "an", "cien"])
+
+def test_hyph_is_valid_ca():
+    """
+    Test is_valid() for Catalan
+    """
+    assert Hyphenation("acel·lular", ["a", "cel", "lu", "lar"], "ca").is_valid()
