@@ -129,15 +129,17 @@ class Hyphenation:
             if hyph_str in self.word.split(" "):
                 return True
         elif self.lang == "hu":
-            if self.word.replace("ccs", "cscs") == hyph_str:
-                return True
-            if self.word.replace("lly", "lyly") == hyph_str:
-                return True
-            if self.word.replace("nny", "nyny") == hyph_str:
-                return True
-            if self.word.replace("ssz", "szsz") == hyph_str:
-                return True
-            if self.word.replace("tty", "tyty") == hyph_str:
+            hu_replacements = {
+                "ccs": "cscs",
+                "lly": "lyly",
+                "nny": "nyny",
+                "ssz": "szsz",
+                "tty": "tyty",
+            }
+            modified_word = self.word
+            for orig, repl in hu_replacements.items():
+                modified_word = modified_word.replace(orig, repl)
+            if modified_word == hyph_str:
                 return True
         elif self.lang == "it":
             if remove_diacritics(self.word) == remove_diacritics(hyph_str):
