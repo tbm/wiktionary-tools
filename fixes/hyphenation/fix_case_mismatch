@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Fix wrong case in hyphenation patterns
+
+See checks/hyphenation/check_hyph_patterns for a script that can find
+uch entries.
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def fix_case_hyph_characters(entry_name, entry):
+    """
+    Fix case mismatch in hyphenation patterns in entry
+    """
+    for line in entry.splitlines(keepends=True):
+        if match := re.match(r"(.*\{\{(hyphenation|hyph)\|...?\|)(.+)", line):
+            pattern = match.group(3)
+            if pattern[0].upper() == entry_name[0].upper():
+                pattern = entry_name[0] + pattern[1:]
+            line = match.group(1) + pattern + "\n"
+        yield line
+
+
+@click.command()
+@click.argument("page")
+@click.option("--lang", default="de", help="Language code")
+def main(page, lang):
+    """
+    Fix case mismatch in hyphenation patterns
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_case_hyph_characters(page.title(), old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog(lang, "Fix capitalization in hyphenation")
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
