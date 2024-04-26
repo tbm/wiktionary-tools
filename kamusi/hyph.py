@@ -31,9 +31,10 @@ class Hyphenation:
     Class for hyphenations
     """
 
-    def __init__(self, word, hyph):
+    def __init__(self, word, hyph, lang=None):
         self.word = word
         self.hyph = hyph
+        self.lang = lang
 
     def get_word(self):
         """

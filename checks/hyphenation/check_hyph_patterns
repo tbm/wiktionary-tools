@@ -12,13 +12,13 @@ import click
 import kamusi
 
 
-def get_invalid_hyph_patterns(entry_name, entry):
+def get_invalid_hyph_patterns(entry_name, entry, lang):
     """
     For all hyphenation patterns found in an entry, check if it is valid
     (i.e. if the pattern matches the word).
     """
     for pattern in kamusi.get_hyphenations(entry):
-        hyph = kamusi.Hyphenation(entry_name, pattern)
+        hyph = kamusi.Hyphenation(entry_name, pattern, lang)
         if not hyph.is_valid():
             yield hyph
 
@@ -41,10 +41,11 @@ def print_hyph_mismatch(hyph, output_format):
 
 @click.command()
 @click.argument("directory")
+@click.argument("lang")
 @click.option(
     "--output", type=str, required=False, default="text", help="Output format"
 )
-def check_all_entries(directory, output):
+def check_all_entries(directory, lang, output):
     """
     Check all entries in the directory
     """
@@ -58,7 +59,7 @@ def check_all_entries(directory, output):
         # This needs more discussion first.
         if " " in filepath.name and re.search(r"\{\{hyph.*\|\|", entry):
             continue
-        for hyph in get_invalid_hyph_patterns(filepath.name, entry):
+        for hyph in get_invalid_hyph_patterns(filepath.name, entry, lang):
             print_hyph_mismatch(hyph, output)
 
 
