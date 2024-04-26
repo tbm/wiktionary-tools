@@ -25,12 +25,10 @@ def check_hyph_chars(entry_name, entry):
         hyph = "".join(pattern)
         if "·" in hyph:
             print(entry_name, "invalid character:", hyph)
-        if "-" in hyph and "-" not in entry_name:
-            print(entry_name, "invalid character:", hyph)
-        if "." in hyph and "." not in entry_name:
-            print(entry_name, "invalid character:", hyph)
-        if "," in hyph and "," not in entry_name:
-            print(entry_name, "invalid character:", hyph)
+        check_chars = ["-", ".", ","]
+        for char in check_chars:
+            if char in hyph and char not in entry_name:
+                print(entry_name, "invalid character:", hyph)
 
 
 @click.command()
