@@ -2,7 +2,7 @@
 Test hyphenation functions
 """
 
-from kamusi import get_hyphenations
+from kamusi import Hyphenation, get_hyphenations
 
 
 def test_no_pattern():
@@ -68,3 +68,11 @@ def test_double_pattern_pl():
     pattern = "{{pl-p|'prze.r-znąć|'przer.znąć|h1=prze.rznąć|h2=przer.znąć}}"
     hyph = [["prze", "rznąć"], ["przer", "znąć"]]
     assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_hyph_is_valid():
+    """
+    Test simple cases of is_valid()
+    """
+    assert Hyphenation("abbrechen", ["ab", "bre", "chen"]).is_valid()
+    assert not Hyphenation("wrong", ["ab", "bre", "chen"]).is_valid()

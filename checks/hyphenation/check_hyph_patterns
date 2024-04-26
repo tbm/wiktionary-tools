@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+"""
+Check if hyphenation patterns match the word for all entries of a language
+"""
+
+from pathlib import Path
+
+import click
+
+import kamusi
+
+
+def check_hyph_pattern(entry_name, entry):
+    """
+    For all hyphenation patterns found in an entry, check if it is valid
+    (i.e. if the pattern matches the word).
+    """
+    for pattern in kamusi.get_hyphenations(entry):
+        hyph = kamusi.Hyphenation(entry_name, pattern)
+        if not hyph.is_valid():
+            print(f"Mismatch: {entry_name} vs {''.join(hyph.get_hyph())}")
+
+
+@click.command()
+@click.argument("directory")
+def check_all_entries(directory):
+    """
+    Check all entries in the directory
+    """
+    for filepath in sorted(Path(directory).glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check_hyph_pattern(filepath.name, entry)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter

@@ -24,3 +24,36 @@ def get_hyphenations(entry):
                 for param in template.params:
                     if param.name.strip() in ("h", "h1", "h2", "h3"):
                         yield param.value.strip().split(".")
+
+
+class Hyphenation:
+    """
+    Class for hyphenations
+    """
+
+    def __init__(self, word, hyph):
+        self.word = word
+        self.hyph = hyph
+
+    def get_word(self):
+        """
+        Return the word
+        """
+        return self.word
+
+    def get_hyph(self):
+        """
+        Return the hypenation pattern (a list)
+        """
+        return self.hyph
+
+    def __str__(self):
+        return self.word + ": " + "·".join(self.hyph)
+
+    def is_valid(self):
+        """
+        Check if a hyphenation pattern matches the word
+        """
+        if self.word == "".join(self.hyph):
+            return True
+        return False
