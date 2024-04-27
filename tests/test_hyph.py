@@ -178,6 +178,15 @@ def test_double_pattern_fi():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_dot_and_dash_fi():
+    """
+    Test case for a Finnish template containing both dot and dash
+    """
+    pattern = "{{fi-p|diis(:)el-vero|r=ero|h=die.sel-ve.ro}}"
+    hyph = [["die", "sel", "ve", "ro"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_no_pattern_pl():
     """
     Test case for a Polish template without hyphenation

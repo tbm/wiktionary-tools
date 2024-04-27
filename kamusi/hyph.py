@@ -34,7 +34,13 @@ def get_hyphenations(entry):
                 if match := re.search("<hyph:([^+-][^>]+)>", str(template.params[0])):
                     for hyph in re.split(r",\s*", match.group(1)):
                         yield hyph.split(".")
-            elif template.name in ("fi-p", "fi-pronunciation", "pl-p"):
+            elif template.name in ("fi-p", "fi-pronunciation"):
+                for param in template.params:
+                    if param.value.strip() == "-":
+                        continue
+                    if param.name.strip() in ("h", "h1", "h2", "h3"):
+                        yield re.split(r"\.|-", param.value.strip())
+            elif template.name == "pl-p":
                 for param in template.params:
                     if param.value.strip() == "-":
                         continue
