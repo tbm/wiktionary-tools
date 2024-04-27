@@ -28,12 +28,15 @@ def check_hyph_case(entry_name, entry):
 
 
 @click.command()
-@click.argument("directory")
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
 def check_all_entries(directory):
     """
     Check all entries in the directory
     """
-    for filepath in sorted(Path(directory).glob("*")):
+    for filepath in sorted(directory.glob("*")):
         if not filepath.is_file():
             continue
         with open(filepath, "r", encoding="utf-8") as entry_fp:

@@ -46,7 +46,10 @@ def print_hyph_mismatch(hyph, output_format, lang):
 
 
 @click.command()
-@click.argument("directory")
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
 @click.argument("lang")
 @click.option(
     "--output", type=str, required=False, default="text", help="Output format"
@@ -55,7 +58,7 @@ def check_all_entries(directory, lang, output):
     """
     Check all entries in the directory
     """
-    for filepath in sorted(Path(directory).glob("*")):
+    for filepath in sorted(directory.glob("*")):
         if not filepath.is_file():
             continue
         with open(filepath, "r", encoding="utf-8") as entry_fp:
