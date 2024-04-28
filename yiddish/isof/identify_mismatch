@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Compare Yiddish entries to ISOF entries to mis mismatching information
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import csv
+from pathlib import Path
+
+import click
+
+import isofyi
+import kamusi.yi
+
+
+def compare_yiddish_isof(entry_name, entry, isof):
+    """
+    Compare Yiddish entries to ISOF entries
+    """
+    for a in kamusi.yi.parse_entry(entry_name, entry):
+        for b in [x for x in isof if x and x.word == entry_name]:
+            if not isinstance(b, type(a)):
+                continue
+            if isinstance(a, isofyi.YiddishNoun):
+                if a.gender != b.gender:
+                    yield "gender", entry_name, a.gender, b.gender
+                if a.plural != b.plural:
+                    yield "plural", entry_name, a.plural, b.plural
+            elif isinstance(a, isofyi.YiddishVerb):
+                if a != b:
+                    yield "past participle", entry_name, a.past_participle, b.past_participle
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.argument(
+    "output",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, path_type=Path),
+)
+def check_all_entries(directory, output):
+    """
+    Check all entries in the directory
+    """
+    data = isofyi.get_data("job.json")
+    isof = list(isofyi.get_words(data))
+    errors = []
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+            for error in compare_yiddish_isof(filepath.name, entry, isof):
+                errors.append(error)
+    with open(output, "w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        for error in errors:
+            writer.writerow(error)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
