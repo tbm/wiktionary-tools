@@ -58,7 +58,7 @@ def main(page, lang):
     if old_text == new_text:
         print("No change")
         sys.exit(1)
-    changelog = kamusi.format_changelog(lang, "Use template parameters for hyphenation")
+    changelog = kamusi.format_changelog("Use template parameters for hyphenation", lang)
     print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":

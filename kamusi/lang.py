@@ -12,6 +12,8 @@ import mediawiki_langcodes
 
 # Wiktionary-specific overrides
 LANG_MAP = {
+    "bcl": "Bikol Central",
+    "jam": "Jamaican Creole",
     "lg": "Luganda",
     "mfe": "Mauritian Creole",
     "ny": "Chichewa",

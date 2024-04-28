@@ -38,7 +38,7 @@ def add_ref_baldi(page, pageno, ref, lang):
     if old_text == new_text:
         print("No change")
         sys.exit(1)
-    changelog = kamusi.format_changelog(lang, "Add reference to Baldi")
+    changelog = kamusi.format_changelog("Add reference to Baldi", lang)
     print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":

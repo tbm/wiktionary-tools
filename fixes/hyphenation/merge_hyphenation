@@ -55,7 +55,7 @@ def main(page, lang):
     if old_text == new_text:
         print("No change")
         sys.exit(1)
-    changelog = kamusi.format_changelog(lang, "Merge hyphenation info")
+    changelog = kamusi.format_changelog("Merge hyphenation info", lang)
     print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":
