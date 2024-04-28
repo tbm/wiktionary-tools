@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Download pages from Swedish Wiktionary
+
+FIXME: this needs to be merged with the main download/download
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+import time
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def get_text(page):
+    """
+    Get the text from a Wikimedia page - try again if there's a server error
+    """
+    try:
+        return page.text
+    except pywikibot.exceptions.ServerError:
+        print("Sleeping before trying again...")
+        time.sleep(20)
+        return get_text(page)
+
+
+@click.command()
+@click.option("--lang", type=str, required=True, help="Language code")
+@click.option("--out", type=click.Path(), required=True, help="Directory for output")
+def download(lang, out):
+    """
+    Downlodad lemmas and store them in a directory
+    """
+    out = Path(out)
+    Path.mkdir(out, exist_ok=True)
+    site = pywikibot.Site("sv", "wiktionary")
+    category = pywikibot.Category(site, "Jiddisch" + "/" + "Alla uppslag")
+    for page in category.articles():
+        print(page.title())
+        text = kamusi.get_entry(get_text(page), lang, site="sv", strip=True)
+        if not text:
+            print("Can't get entry for", page.title())
+            continue
+        outfile = out / Path(page.title().replace("/", "_"))
+        with open(outfile, "w", encoding="utf-8") as outfile:
+            print(text, file=outfile)
+
+
+if __name__ == "__main__":
+    download()  # pylint: disable=no-value-for-parameter

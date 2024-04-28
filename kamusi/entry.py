@@ -13,11 +13,14 @@ import re
 import kamusi
 
 
-def get_entry(text, lang, strip=False):
+def get_entry(text, lang, site="en", strip=False):
     """
     Get the entry for a specific language from a text
     """
-    start = text.find("==" + kamusi.code_to_name(lang) + "==")
+    lang_name = kamusi.code_to_name(lang, site)
+    if site == "sv":
+        lang_name = lang_name.title()
+    start = text.find("==" + lang_name + "==")
     if start == -1:
         return None
     text = text[start:]

@@ -19,11 +19,11 @@ LANG_MAP = {
 }
 
 
-def code_to_name(lang):
+def code_to_name(lang, site="en"):
     """
     Map a language code to a language name.
 
     Unfortunately, code_to_name from mediawiki_langcodes returns some
     names which are different on Wiktionary, so we have some overrides.
     """
-    return LANG_MAP.get(lang, mediawiki_langcodes.code_to_name(lang, "en"))
+    return LANG_MAP.get(lang, mediawiki_langcodes.code_to_name(lang, site))
