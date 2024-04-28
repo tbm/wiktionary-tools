@@ -1,6 +1,12 @@
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Test hyphenation functions
 """
+
+__license__ = "GPL-3.0-or-later"
 
 from kamusi import Hyphenation, get_hyphenations
 
