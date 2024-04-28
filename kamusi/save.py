@@ -11,8 +11,8 @@ __license__ = "GPL-3.0-or-later"
 import kamusi
 
 
-def format_changelog(description, lang):
+def format_changelog(description, lang, site="en"):
     """
     Add the language to a description to generate a changelog
     """
-    return "/* " + kamusi.code_to_name(lang) + " */ " + description
+    return "/* " + kamusi.code_to_name(lang, site) + " */ " + description
