@@ -8,7 +8,9 @@ Test Yiddish functions (Swedish Wiktionary)
 
 __license__ = "GPL-3.0-or-later"
 
-from kamusi.yi_sv import get_noun_section, get_noun, get_verb
+import mwparserfromhell
+
+from kamusi.yi_sv import get_noun_section, get_gender, get_noun, get_verb
 from isofyi import YiddishNoun, YiddishVerb
 
 YI_SV_NOUN_1 = """==Jiddisch==
@@ -45,6 +47,36 @@ def test_get_noun_section():
     assert get_noun_section(YI_SV_NOUN_1) == yi_sv_noun_section
     assert get_noun_section(YI_SV_NOUN_2) == yi_sv_noun_section
     assert get_noun_section(YI_SV_NOUN_3) == yi_sv_noun_section
+
+
+def test_get_gender():
+    """
+    Tests for get_gender()
+    """
+
+    def str2tmpl(string):
+        wikicode = mwparserfromhell.parse(string)
+        return wikicode.filter_templates()
+
+    assert get_gender(str2tmpl("{{f}}")) == "f"
+    assert get_gender(str2tmpl("{{m}}")) == "m"
+    assert get_gender(str2tmpl("{{n}}")) == "n"
+
+    assert get_gender(str2tmpl("{{fpl}}")) == "fp"
+    assert get_gender(str2tmpl("{{mpl}}")) == "mp"
+    assert get_gender(str2tmpl("{{npl}}")) == "np"
+
+    # Tests for order
+    assert get_gender(str2tmpl("{{m}} {{f}}")) == "mf"
+    assert get_gender(str2tmpl("{{f}} {{m}}")) == "mf"
+    assert get_gender(str2tmpl("{{m}} {{n}}")) == "mn"
+    assert get_gender(str2tmpl("{{n}} {{m}}")) == "mn"
+    assert get_gender(str2tmpl("{{f}} {{n}}")) == "fn"
+    assert get_gender(str2tmpl("{{n}} {{f}}")) == "fn"
+    assert get_gender(str2tmpl("{{m}} {{f}} {{n}}")) == "mfn"
+    assert get_gender(str2tmpl("{{m}} {{n}} {{f}}")) == "mfn"
+    assert get_gender(str2tmpl("{{f}} {{n}} {{m}}")) == "mfn"
+    assert get_gender(str2tmpl("{{n}} {{f}} {{m}}")) == "mfn"
 
 
 def test_get_noun_no_gender():
