@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Compare Swedish and English Wiktionary page names of Yiddish
+by looking at the transliteration (to find differences with
+pointed/unpointed titles)
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import csv
+from functools import lru_cache
+from pathlib import Path
+
+import click
+import pywikibot
+import yiddish
+
+# Ignore some words with different meaning but same transliteration
+IGNORE = [
+    "ײ",
+    "איי",
+    "א",
+    "אַלף",
+    "אָדר",
+    "אָדער",
+    "אופֿן",
+    "ב",
+    "בית",
+    "בייז",
+    "ממש",
+    "מאַמעש",
+    "גױ",
+    "פּאַרע",
+    "פּרעה",
+    "צער",
+    "צאַר",
+    "ציון",
+    "ציִען",
+    "רות",
+    "רוס",
+    "נתן",
+    "נאָסן",
+]
+
+
+def get_page_titles(site, category):
+    """
+    Get all page titles from a category
+    """
+    return list(page.title() for page in pywikibot.Category(site, category).articles())
+
+
+def is_alt_page(site, title):
+    """
+    Check if a page is an alt page, i.e. an alternative form/spelling
+    or an unpointed form.
+    """
+    page = pywikibot.Page(site, title)
+    if "{{alt" in page.text:
+        return True
+    if "{{yi-unpointed form" in page.text:
+        return True
+    if "{{yi-phonetic spelling" in page.text:
+        return True
+    return False
+
+
+@lru_cache(maxsize=None)
+def yi_translit(text):
+    """
+    Cache the result of yiddish.transliterate() because it's really slow.
+    """
+    return yiddish.transliterate(text, loshn_koydesh=True)
+
+
+@click.command()
+@click.argument(
+    "output",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, path_type=Path),
+)
+def check_all_entries(output):
+    """
+    Check all entries in the directory
+    """
+    site_sv = pywikibot.Site("sv", "wiktionary")
+    pages_sv = get_page_titles(site_sv, "Jiddisch/Alla uppslag")
+    site_en = pywikibot.Site("en", "wiktionary")
+    pages_en_lemma = get_page_titles(site_en, "Yiddish lemmas")
+    pages_en_nonlemma = get_page_titles(site_en, "Yiddish non-lemma forms")
+    pages_en = list(set(pages_en_lemma + pages_en_nonlemma))
+    mismatch = []
+    for entry_sv in pages_sv:
+        if entry_sv in IGNORE:
+            continue
+        for entry_en in pages_en:
+            if entry_sv != entry_en and yi_translit(entry_sv) == yi_translit(entry_en):
+                # Ignore alternative and unpointed spellings
+                if is_alt_page(site_en, entry_en):
+                    continue
+                if entry_en in pages_sv:
+                    continue
+                mismatch.append((entry_sv, entry_en, yi_translit(entry_sv)))
+    with open(output, "w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        for a in mismatch:
+            writer.writerow(a)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
