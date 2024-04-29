@@ -65,6 +65,8 @@ def get_gender(templates):
             continue
         if name.startswith("yi-subst-"):
             name = name.split("-")[2]
+        if name.endswith("pl"):
+            name = name[:2]
         genders.add(name)
     if not genders:
         return None
