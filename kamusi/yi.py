@@ -20,7 +20,7 @@ def get_val(template, name):
 
 def parse_entry(entry_name, entry):
     """
-    Return a YiddishFoo() named tuple
+    Return a YiddishFoo() named tuple for an entry from English Wiktionary
     """
     for line in entry.splitlines(keepends=True):
         # This is just a speed optimization over calling mwparserfromhell
