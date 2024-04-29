@@ -38,7 +38,7 @@ def add_noun_gender(entry, gender):
             if not line.endswith(")\n"):
                 print("Don't know how to process line:", line)
                 sys.exit(1)
-            line = line.rstrip() + " {{" + gender + "}} " + "\n"
+            line = line.rstrip() + " {{" + gender + "}}" + "\n"
         yield line
 
 
