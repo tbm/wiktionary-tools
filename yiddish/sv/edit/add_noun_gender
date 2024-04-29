@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Add gender to noun
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def add_noun_gender(entry, gender):
+    """
+    Add gender to noun
+    """
+    if "{{yi-subst-" in entry:
+        print("TODO: ensure gender from yi-subst- matches")
+        sys.exit(1)
+    in_noun = False
+    for line in entry.splitlines(keepends=True):
+        if "===Substantiv===" in line:
+            in_noun = True
+        elif line.startswith("==="):
+            in_noun = False
+        elif in_noun and line.startswith("'''"):
+            if ") {{" in line:
+                print("Page already has gender")
+                sys.exit(1)
+            if not line.endswith(")\n"):
+                print("Don't know how to process line:", line)
+                sys.exit(1)
+            line = line.rstrip() + " {{" + gender + "}} " + "\n"
+        yield line
+
+
+@click.command()
+@click.argument("page")
+@click.argument("gender")
+def main(page, gender):
+    """
+    Add gender to noun
+    """
+    site = pywikibot.Site("sv", "wiktionary")
+    page = pywikibot.Page(site, page)
+    lang = "yi"
+    old_text = kamusi.get_entry(page.text, lang, site="sv")
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(add_noun_gender(old_text, gender))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog("Add gender to noun", lang, "sv")
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
