@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Compare the page name with the headword
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import csv
+from pathlib import Path
+import re
+
+import click
+import mwparserfromhell
+
+
+def wiki_to_text(text):
+    """
+    Strip wikicode and remove just the text
+    """
+    wikicode = mwparserfromhell.parse(text)
+    text = [str(x) for x in wikicode.filter_text() if x not in ("länk", "yi", "rtl")]
+    return "".join(text)
+
+
+def check_headword(entry_name, entry):
+    """
+    Compare the page name with the headword and return differences
+    """
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("'''"):
+            headword = line.split("'''")[1]
+            headword = headword.replace("\u200E", "")
+            headword = re.sub(r"\[\[[^]]+\|([^]]+)\]\]", r"\1", headword)
+            headword = headword.replace("[[", "").replace("]]", "")
+            if "{{" in headword:
+                headword = wiki_to_text(headword)
+            if headword != entry_name:
+                yield entry_name, headword
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.argument(
+    "output",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, path_type=Path),
+)
+def check_all_entries(directory, output):
+    """
+    Check all entries in the directory
+    """
+    errors = []
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        for error in check_headword(filepath.name, entry):
+            errors.append(error)
+    with open(output, "w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        for error in errors:
+            writer.writerow(error)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
