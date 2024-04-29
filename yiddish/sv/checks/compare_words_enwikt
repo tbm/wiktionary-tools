@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Compare Yiddish words between Swedish and English Wiktionary
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import csv
+from pathlib import Path
+
+import click
+
+import isofyi
+import kamusi.yi
+import kamusi.yi_sv
+
+
+# TODO: this duplicates code from yiddish/isof/identify_mismatch
+def compare_words(name, word1, word2):
+    """
+    Compare two Yiddish words and return differences
+    """
+    for a in word1:
+        for b in word2:
+            if not isinstance(b, type(a)):
+                continue
+            if isinstance(a, isofyi.YiddishNoun):
+                if a.gender != b.gender:
+                    yield "gender", name, a.gender, b.gender
+            # TODO: to be done
+            #    if a.plural != b.plural:
+            #        yield "plural", name, a.plural, b.plural
+            # elif isinstance(a, isofyi.YiddishVerb):
+            #    if a != b:
+            #        yield "past participle", name, a.past_participle, b.past_participle
+
+
+@click.command()
+@click.argument(
+    "svdir",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.argument(
+    "endir",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.argument(
+    "output",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, path_type=Path),
+)
+def check_all_entries(svdir, endir, output):
+    """
+    Check all entries in the directory
+    """
+    errors = []
+    for svpath in sorted(svdir.glob("*")):
+        if not svpath.is_file():
+            continue
+        enpath = endir / svpath.name
+        if not enpath.exists():
+            continue
+        with open(svpath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        svwikt = list(kamusi.yi_sv.parse_entry(svpath.name, entry))
+        with open(enpath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        enwikt = list(kamusi.yi.parse_entry(enpath.name, entry))
+        # TODO: we might have multiple nouns and we need
+        # a better way to compare them
+        if len(svwikt) != 1 or len(enwikt) != 1:
+            continue
+        for error in compare_words(svpath.name, svwikt, enwikt):
+            errors.append(error)
+    with open(output, "w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        for error in errors:
+            writer.writerow(error)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
