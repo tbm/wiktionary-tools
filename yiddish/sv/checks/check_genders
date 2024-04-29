@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Compare the gender information from {{X}} templates with that from the
+{{yi-subst-X-Y}} templates.
+
+Swedish Wiktionary specifies genders like this:
+
+{{yi-subst-f-n}}
+'''foo''' (food) {{f}}
+
+The "f" in yi-subst-f-n must match the "f" in {{f}}.  If there is a
+difference, we have a problem.
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import csv
+from pathlib import Path
+
+import click
+import mwparserfromhell
+
+import kamusi.yi_sv
+from kamusi.yi_sv import get_gender, get_parts
+
+
+def get_templates_from_line_starting_with_key(text, key):
+    """
+    This functions returns the templates found on lines that
+    start with a specific string (the key).
+    """
+    lines = (line for line in text.splitlines() if line.startswith(key))
+    wikicode = mwparserfromhell.parse(lines)
+    return wikicode.filter_templates()
+
+
+def check_gender(entry_name, entry):
+    """
+    Compare the gender from gender templates and yi-subst-Y-X templates
+    """
+    section = kamusi.yi_sv.get_noun_section(entry)
+    if not section:
+        return
+    for part in get_parts(section):
+        if "{{yi-subst-" not in part:
+            return
+        subst = get_templates_from_line_starting_with_key(part, "{{yi-sub")
+        headword = get_templates_from_line_starting_with_key(part, "'''")
+        # There might not be gender information specified in {{.}}, in
+        # which case there's nothing to compare
+        if not get_gender(headword):
+            return
+        if get_gender(headword) != get_gender(subst):
+            yield entry_name, get_gender(headword), get_gender(subst)
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.argument(
+    "output",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, path_type=Path),
+)
+def check_all_entries(directory, output):
+    """
+    Check all entries in the directory
+    """
+    errors = []
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        for error in check_gender(filepath.name, entry):
+            errors.append(error)
+    with open(output, "w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        for error in errors:
+            writer.writerow(error)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
