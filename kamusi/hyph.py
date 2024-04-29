@@ -122,6 +122,7 @@ class Hyphenation:
             "hu": HyphenationHU,
             "it": HyphenationIT,
             "nl": HyphenationNL,
+            "nn": HyphenationNN,
             "sq": HyphenationSQ,
             "yi": HyphenationYI,
         }
@@ -233,6 +234,21 @@ class HyphenationNL(Hyphenation):
         if super().is_valid():
             return True
         if remove_diacritics(self.word) == self.hyph_str:
+            return True
+        return False
+
+
+class HyphenationNN(Hyphenation):
+    """
+    Hyphenation module for Norwegian Nynorsk
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        # It's not clear why user Eiliv added diacritics
+        # but let's ignore them for now.
+        if self.word == remove_diacritics(self.hyph_str):
             return True
         return False
 
