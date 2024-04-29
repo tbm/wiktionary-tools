@@ -2,6 +2,8 @@
 Functions for Yiddish for Swedish Wiktionary
 """
 
+import re
+
 import mwparserfromhell
 
 import isofyi
@@ -35,6 +37,15 @@ def get_verb_section(entry):
     return get_section(entry, "Verb")
 
 
+def get_parts(entry):
+    """
+    Get the individual parts (definitions) of an entry or section
+    """
+    loc = entry.find("\n")
+    for part in re.findall(r"((?:\{\{.*\}\}\n)+'''.*\n)", entry):
+        yield part
+
+
 def gender_sort(item):
     """
     Sort gender identifies in the same way as English Wiktionary
@@ -64,12 +75,9 @@ def get_noun(entry_name, entry):
     """
     Get a noun from an entry from Swedish Wiktionary
     """
-    section = get_noun_section(entry)
-    if not section:
-        return
     # We have to cut the entry because later information (e.g. etymology)
     # can contain unrelated gender
-    section = section[: section.find("\n#")]
+    section = entry[: entry.find("\n#")]
     wikicode = mwparserfromhell.parse(section)
     templates = wikicode.filter_templates()
     gender = get_gender(templates)
@@ -80,10 +88,7 @@ def get_verb(entry_name, entry):
     """
     Get a Verb from an entry from Swedish Wiktionary
     """
-    section = get_verb_section(entry)
-    if not section:
-        return
-    if "{{verb|yi}}" in section:
+    if "{{verb|yi}}" in entry:
         return isofyi.YiddishVerb(entry_name, None)
     return None
 
@@ -93,6 +98,8 @@ def parse_entry(entry_name, entry):
     Return a YiddishFoo() named tuple for an entry from Swedish Wiktionary
     """
     if "===Substantiv===" in entry:
-        yield get_noun(entry_name, entry)
+        for part in get_parts(get_noun_section(entry)):
+            yield get_noun(entry_name, part)
     if "===Verb===" in entry:
-        yield get_verb(entry_name, entry)
+        for part in get_parts(get_verb_section(entry)):
+            yield get_verb(entry_name, part)
