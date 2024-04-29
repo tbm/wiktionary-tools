@@ -67,7 +67,12 @@ def get_gender(templates):
             name = name.split("-")[2]
         if name.endswith("pl"):
             name = name[:2]
-        genders.add(name)
+        # We can have {{mf}} plus {{yi-subst-m-s}} and {{yi-subst-f-s}},
+        # leading to mf + m + f
+        if name == "mf":
+            genders.update([char for char in name])
+        else:
+            genders.add(name)
     if not genders:
         return None
     return "".join(sorted(genders, key=gender_sort))

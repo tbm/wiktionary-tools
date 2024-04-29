@@ -61,6 +61,8 @@ def test_get_gender():
     assert get_gender(str2tmpl("{{f}}")) == "f"
     assert get_gender(str2tmpl("{{m}}")) == "m"
     assert get_gender(str2tmpl("{{n}}")) == "n"
+    assert get_gender(str2tmpl("{{mf}}")) == "mf"
+    assert get_gender(str2tmpl("{{yi-subst-m-s}} {{yi-subst-f-s}} {{mf}}")) == "mf"
 
     assert get_gender(str2tmpl("{{fpl}}")) == "fp"
     assert get_gender(str2tmpl("{{mpl}}")) == "mp"
