@@ -221,7 +221,7 @@ def get_adverbs(words):
 
 def get_conjunctions(words):
     """
-    Get all conjuntions
+    Get all conjunctions
     """
     return filter(lambda x: isinstance(x, YiddishConjunction), words)
 

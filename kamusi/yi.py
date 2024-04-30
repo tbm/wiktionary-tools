@@ -11,7 +11,7 @@ import isofyi
 
 def get_val(template, name):
     """
-    Return value of template paramater or None
+    Return value of template parameter or None
     """
     if template.has(name):
         return template.get(name).value

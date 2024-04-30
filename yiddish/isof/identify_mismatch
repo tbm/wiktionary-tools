@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Compare Yiddish entries to ISOF entries to mis mismatching information
+Compare Yiddish entries to ISOF entries to find mismatching information
 """
 
 __license__ = "GPL-3.0-or-later"
