@@ -229,6 +229,42 @@ def test_double_pattern_pl():
     assert list(get_hyphenations(pattern)) == hyph
 
 
+def test_empty_pattern_tl():
+    """
+    Test case for a Tagalog template without hyphenation
+    """
+    pattern = "{{tl-pr}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_no_pattern_tl():
+    """
+    Test case for a Tagalog template without hyphenation
+    """
+    pattern = "{{tl-pr|hmp=Anastacia}}"
+    hyph = []
+    assert list(get_hyphenations(pattern)) == hyph
+
+
+def test_single_pattern_tl():
+    """
+    Test case for a Tagalog template with one hyphenation
+    """
+    assert list(get_hyphenations("{{tl-pr|A|pa|yao}}")) == [["A", "pa", "yao"]]
+    assert list(get_hyphenations("{{tl-pr|a.traksiyón}}")) == [["a", "traksiyón"]]
+    assert list(get_hyphenations("{{tl-pr|da7eng}}")) == [["da", "eng"]]
+
+
+def test_double_pattern_tl():
+    """
+    Test case for a Tagalog template with two hyphenations
+    """
+    pattern = "{{tl-pr|A|ngo|no||An|go|no|IPA=+|IPA2=Anggono}}"
+    hyph = [["A", "ngo", "no"], ["An", "go", "no"]]
+    assert list(get_hyphenations(pattern)) == hyph
+
+
 def test_hyph_eq():
     """
     Test whether Hyphenation() instances are equal

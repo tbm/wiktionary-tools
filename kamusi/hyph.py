@@ -64,6 +64,16 @@ def get_hyphenations_pl(template):
         if param.name.strip() in ("h", "h1", "h2", "h3"):
             yield param.value.strip().split(".")
 
+def get_hyphenations_tl(template):
+    """
+    Get hyphenations from {{tl-pr}}
+    """
+    hyph = "|".join(str(p) for p in template.params if not p.showkey)
+    if not hyph:
+        return
+    for pattern in hyph.split("||"):
+        yield re.split(r"\||\.+|7", pattern)
+
 
 def get_hyphenations(entry):
     """
@@ -72,7 +82,7 @@ def get_hyphenations(entry):
     for line in entry.splitlines(keepends=True):
         # This is just a speed optimization over calling mwparserfromhell
         # on the whole entry
-        if not re.search(r"\{\{(hyph|es-pr|it-pr|fi-p|pl-p)", line):
+        if not re.search(r"\{\{(hyph|es-pr|it-pr|fi-p|pl-p|tl-pr)", line):
             continue
         wikicode = mwparserfromhell.parse(line)
         for template in wikicode.filter_templates():
@@ -87,6 +97,8 @@ def get_hyphenations(entry):
                     func = get_hyphenations_it
                 case "pl-p":
                     func = get_hyphenations_pl
+                case "tl-pr":
+                    func = get_hyphenations_tl
                 case _:
                     continue
             for hyph in func(template):
