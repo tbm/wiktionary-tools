@@ -191,11 +191,14 @@ class HyphenationDE(Hyphenation):
 class HyphenationHU(Hyphenation):
     """
     Hyphenation module for Hungarian
+
+    See https://en.wiktionary.org/wiki/Appendix:Hungarian_hyphenation
     """
 
     def is_valid(self):
         if super().is_valid():
             return True
+        # See rule 8: "Long double consonants are separated"
         hu_replacements = {
             "ccs": "cscs",
             "ggy": "gygy",
@@ -208,6 +211,10 @@ class HyphenationHU(Hyphenation):
         for orig, repl in hu_replacements.items():
             modified_word = modified_word.replace(orig, repl)
         if modified_word == self.hyph_str:
+            return True
+        if modified_word == self.hyph_str.replace("{{snh}}", ""):
+            return True
+        if strip_punctuation(modified_word) == strip_punctuation(self.hyph_str):
             return True
         return False
 
