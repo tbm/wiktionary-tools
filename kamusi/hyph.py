@@ -15,6 +15,56 @@ import unicodedata
 import mwparserfromhell
 
 
+def get_hyphenations_hyph(template):
+    """
+    Get hyphenations from {{hyph}} or {{hyphenation}}
+    """
+    hyph = "|".join(str(p) for p in template.params[1:] if not p.showkey)
+    for pattern in hyph.split("||"):
+        yield pattern.split("|")
+
+
+def get_hyphenations_es(template):
+    """
+    Get hyphenations from {{es-pr}}
+    """
+    if not template.params:
+        return
+    if match := re.search("<hyph:([^+-][^>]+)>", str(template.params[0])):
+        for hyph in re.split(r",\s*", match.group(1)):
+            yield hyph.split(".")
+
+
+def get_hyphenations_fi(template):
+    """
+    Get hyphenations from {{fi-p}} / {{fi-pronunciation}}
+    """
+    for param in template.params:
+        if param.value.strip() == "-":
+            continue
+        if param.name.strip() in ("h", "h1", "h2", "h3"):
+            yield re.split(r"\.|-", param.value.strip())
+
+
+def get_hyphenations_it(template):
+    """
+    Get hyphenations from {{it-pr}}.  This appears to work the same way
+    as {{es-pr}}.
+    """
+    return get_hyphenations_es(template)
+
+
+def get_hyphenations_pl(template):
+    """
+    Get hyphenations from {{pl-p}}
+    """
+    for param in template.params:
+        if param.value.strip() == "-":
+            continue
+        if param.name.strip() in ("h", "h1", "h2", "h3"):
+            yield param.value.strip().split(".")
+
+
 def get_hyphenations(entry):
     """
     Extract hyphenation patterns from a Wiktionary entry.
@@ -26,26 +76,21 @@ def get_hyphenations(entry):
             continue
         wikicode = mwparserfromhell.parse(line)
         for template in wikicode.filter_templates():
-            if template.name in ("hyph", "hyphenation"):
-                hyph = "|".join(str(p) for p in template.params[1:] if not p.showkey)
-                for pattern in hyph.split("||"):
-                    yield pattern.split("|")
-            elif template.name in ("es-pr", "it-pr") and template.params:
-                if match := re.search("<hyph:([^+-][^>]+)>", str(template.params[0])):
-                    for hyph in re.split(r",\s*", match.group(1)):
-                        yield hyph.split(".")
-            elif template.name in ("fi-p", "fi-pronunciation"):
-                for param in template.params:
-                    if param.value.strip() == "-":
-                        continue
-                    if param.name.strip() in ("h", "h1", "h2", "h3"):
-                        yield re.split(r"\.|-", param.value.strip())
-            elif template.name == "pl-p":
-                for param in template.params:
-                    if param.value.strip() == "-":
-                        continue
-                    if param.name.strip() in ("h", "h1", "h2", "h3"):
-                        yield param.value.strip().split(".")
+            match str(template.name):
+                case "hyph" | "hyphenation":
+                    func = get_hyphenations_hyph
+                case "es-pr":
+                    func = get_hyphenations_es
+                case "fi-p" | "fi-pronunciation":
+                    func = get_hyphenations_fi
+                case "it-pr":
+                    func = get_hyphenations_it
+                case "pl-p":
+                    func = get_hyphenations_pl
+                case _:
+                    continue
+            for hyph in func(template):
+                yield hyph
 
 
 def convert_german_kk_to_ck(hyph):
