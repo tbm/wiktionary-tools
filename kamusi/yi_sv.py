@@ -58,7 +58,7 @@ def get_gender(templates):
     """
     Get the gender from templates
     """
-    genders = set()
+    genders = []
     template_names = [str(template.name) for template in templates]
     for name in template_names:
         if name in ("subst", "länk"):
@@ -67,15 +67,16 @@ def get_gender(templates):
             name = name.split("-")[2]
         if name.endswith("pl"):
             name = name[:2]
-        # We can have {{mf}} plus {{yi-subst-m-s}} and {{yi-subst-f-s}},
-        # leading to mf + m + f
-        if name == "mf":
-            genders.update([char for char in name])
         else:
-            genders.add(name)
+            # We can have {{mf}} plus {{yi-subst-m-s}} and {{yi-subst-f-s}},
+            # leading to mf + m + f.  Therefore, we have to split mf into
+            # m + f, so we have m + f + m + f which will get reduced to
+            # m + f because of the set()
+            name = [char for char in name]
+        genders.extend(name)
     if not genders:
         return None
-    return "".join(sorted(genders, key=gender_sort))
+    return "".join(sorted(set(genders), key=gender_sort))
 
 
 def get_noun(entry_name, entry):
