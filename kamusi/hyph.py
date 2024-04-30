@@ -64,6 +64,7 @@ def get_hyphenations_pl(template):
         if param.name.strip() in ("h", "h1", "h2", "h3"):
             yield param.value.strip().split(".")
 
+
 def get_hyphenations_tl(template):
     """
     Get hyphenations from {{tl-pr}}
@@ -181,6 +182,7 @@ class Hyphenation:
             "nl": HyphenationNL,
             "nn": HyphenationNN,
             "sq": HyphenationSQ,
+            "tl": HyphenationTL,
             "yi": HyphenationYI,
         }
         subclass = lang_subclasses.get(lang, cls)
@@ -328,6 +330,21 @@ class HyphenationSQ(Hyphenation):
         # It seems the hyphenations have more diacritics than the
         # original word
         if remove_diacritics(self.word) == remove_diacritics(self.hyph_str):
+            return True
+        return False
+
+
+class HyphenationTL(Hyphenation):
+    """
+    Hyphenation module for Tagalog
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        if strip_punctuation(remove_diacritics(self.word)) == strip_punctuation(
+            remove_diacritics(self.hyph_str)
+        ):
             return True
         return False
 
