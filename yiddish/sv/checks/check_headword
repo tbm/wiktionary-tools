@@ -34,6 +34,8 @@ def strip_headword(headword):
     headword = headword.replace("\u200E", "")
     headword = re.sub(r"\[\[[^]]+\|([^]]+)\]\]", r"\1", headword)
     headword = headword.replace("[[", "").replace("]]", "")
+    if "{{" in headword:
+        headword = wiki_to_text(headword)
     if headword.startswith("''"):
         headword = headword.strip("'")
     return headword
@@ -51,8 +53,6 @@ def check_headword(entry_name, entry):
                 continue
             headword = match.group(1)
             headword = strip_headword(headword)
-            if "{{" in headword:
-                headword = wiki_to_text(headword)
             if headword != entry_name:
                 yield entry_name, headword
 
