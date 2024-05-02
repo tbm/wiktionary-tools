@@ -27,6 +27,16 @@ def wiki_to_text(text):
     return "".join(text)
 
 
+def strip_headword(headword):
+    """
+    Remove certain characters and links from the headword
+    """
+    headword = headword.replace("\u200E", "")
+    headword = re.sub(r"\[\[[^]]+\|([^]]+)\]\]", r"\1", headword)
+    headword = headword.replace("[[", "").replace("]]", "")
+    return headword
+
+
 def check_headword(entry_name, entry):
     """
     Compare the page name with the headword and return differences
@@ -34,9 +44,7 @@ def check_headword(entry_name, entry):
     for line in entry.splitlines(keepends=True):
         if line.startswith("'''"):
             headword = line.split("'''")[1]
-            headword = headword.replace("\u200E", "")
-            headword = re.sub(r"\[\[[^]]+\|([^]]+)\]\]", r"\1", headword)
-            headword = headword.replace("[[", "").replace("]]", "")
+            headword = strip_headword(headword)
             if "{{" in headword:
                 headword = wiki_to_text(headword)
             if headword != entry_name:
