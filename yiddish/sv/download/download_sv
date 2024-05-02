@@ -43,7 +43,7 @@ def download(lang, out):
     out = Path(out)
     Path.mkdir(out, exist_ok=True)
     site = pywikibot.Site("sv", "wiktionary")
-    category = pywikibot.Category(site, "Jiddisch" + "/" + "Alla uppslag")
+    category = pywikibot.Category(site, kamusi.code_to_name(lang, "sv") + "/" + "Alla uppslag")
     for page in category.articles():
         print(page.title())
         text = kamusi.get_entry(get_text(page), lang, site="sv", strip=True)
