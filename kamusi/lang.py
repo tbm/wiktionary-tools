@@ -28,4 +28,7 @@ def code_to_name(lang, site="en"):
     Unfortunately, code_to_name from mediawiki_langcodes returns some
     names which are different on Wiktionary, so we have some overrides.
     """
-    return LANG_MAP.get(lang, mediawiki_langcodes.code_to_name(lang, site))
+    lang_name = LANG_MAP.get(lang, mediawiki_langcodes.code_to_name(lang, site))
+    if site == "sv":
+        return lang_name.title()
+    return lang_name
