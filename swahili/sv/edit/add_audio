@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Add audio links to Swahili words on Swedish Wiktionary
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import pywikibot
+
+import kamusi
+
+
+def check_commons(title):
+    """
+    Check whether a commons file exists
+    """
+    site = pywikibot.Site("commons")
+    page = pywikibot.Page(site, "File:" + title)
+    return page.exists()
+
+
+def add_audio(entry, audio, region=None):
+    """
+    Add audio
+    """
+    for line in entry.splitlines(keepends=True):
+        yield line
+        if line.startswith("'''"):
+            if region:
+                region = "|region=" + region
+            else:
+                region = ""
+            yield "*{{uttal|sw" + region + "|ljud=" + audio + "}}\n"
+
+
+def replace_page_prompt(page, old_text, new_text, changelog, minor=False):
+    """
+    Replace certain text with new text on a page, show a diff and prompt
+    """
+    if old_text == new_text:
+        print("No change")
+        return
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=minor)
+
+
+def main():
+    """
+    Iterate over all Swahili words and add audio where needed and available
+    """
+    site = pywikibot.Site("sv", "wiktionary")
+    lang = "sw"
+    category = pywikibot.Category(
+        site, kamusi.code_to_name(lang, "sv") + "/" + "Alla uppslag"
+    )
+    changelog = kamusi.format_changelog("Lägg till ljud", lang, "sv")
+    for page in category.articles():
+        print(page.title())
+        old_text = kamusi.get_entry(page.text, lang, site="sv")
+        if not old_text:
+            print(f"No page {page} for language {lang}")
+            continue
+        if "{{uttal" in old_text:
+            print("Page has {{uttal}} already:", page.title())
+            continue
+        audio = "Sw-ke-" + page.title() + ".flac"
+        if not check_commons(audio):
+            print("No audio on Commons for", page.title())
+            continue
+        new_text = "".join(add_audio(old_text, audio, region="Kenya"))
+        replace_page_prompt(page, old_text, new_text, changelog)
+
+
+if __name__ == "__main__":
+    main()
