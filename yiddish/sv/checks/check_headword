@@ -41,6 +41,19 @@ def strip_headword(headword):
     return headword
 
 
+def compare_title_headword(title, headword):
+    """
+    Compare title with headword
+    """
+    title = title.rstrip("!")
+    headword = headword.rstrip("!")
+    if title == headword:
+        return True
+    if title.replace("_", "/") == headword:
+        return True
+    return False
+
+
 def check_headword(entry_name, entry):
     """
     Compare the page name with the headword and return differences
@@ -53,7 +66,7 @@ def check_headword(entry_name, entry):
                 continue
             headword = match.group(1)
             headword = strip_headword(headword)
-            if headword != entry_name:
+            if not compare_title_headword(entry_name, headword):
                 yield entry_name, headword
 
 
