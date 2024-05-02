@@ -34,6 +34,8 @@ def strip_headword(headword):
     headword = headword.replace("\u200E", "")
     headword = re.sub(r"\[\[[^]]+\|([^]]+)\]\]", r"\1", headword)
     headword = headword.replace("[[", "").replace("]]", "")
+    if headword.startswith("''"):
+        headword = headword.strip("'")
     return headword
 
 
