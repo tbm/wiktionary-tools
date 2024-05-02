@@ -43,7 +43,11 @@ def check_headword(entry_name, entry):
     """
     for line in entry.splitlines(keepends=True):
         if line.startswith("'''"):
-            headword = line.split("'''")[1]
+            match = re.search("'''(.*)'''", line)
+            if not match:
+                print("Can't parse headword:", line)
+                continue
+            headword = match.group(1)
             headword = strip_headword(headword)
             if "{{" in headword:
                 headword = wiki_to_text(headword)
