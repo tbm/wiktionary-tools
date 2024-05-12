@@ -178,6 +178,7 @@ class Hyphenation:
             "ca": HyphenationCA,
             "de": HyphenationDE,
             "hu": HyphenationHU,
+            "id": HyphenationID,
             "it": HyphenationIT,
             "nl": HyphenationNL,
             "nn": HyphenationNN,
@@ -276,6 +277,22 @@ class HyphenationHU(Hyphenation):
         if strip_punctuation(modified_word) == strip_punctuation(self.hyph_str):
             return True
         return False
+
+
+class HyphenationID(Hyphenation):
+    """
+    Hyphenation module for Indonesian
+    """
+
+    def is_valid(self):
+        if super().is_valid():
+            return True
+        if " " in self.word:
+            return True
+        if strip_punctuation(remove_diacritics(self.word)) == strip_punctuation(
+            remove_diacritics(self.hyph_str)
+        ):
+            return True
 
 
 class HyphenationIT(Hyphenation):
