@@ -22,7 +22,10 @@ def add_ety_ref(entry, ref):
     """
     Add a reference to the etymology
     """
-    loc = entry.find("}}.") + 3
+    loc = entry.find("}}.")
+    if loc == -1:
+        raise NotImplementedError
+    loc += 3
     entry = entry[:loc] + ref + entry[loc:]
     return add_reflist(entry)
 
