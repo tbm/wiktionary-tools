@@ -33,7 +33,10 @@ def add_ref(entry, ref):
     """
     loc = entry.find("===References===")
     if loc != -1:
-        loc = entry.find("\n\n", loc) + 1
+        loc = entry.find("\n\n", loc)
+        if loc == -1:
+            return entry + "\n" + ref + "\n"
+        loc += 1
         return entry[:loc] + ref + "\n" + entry[loc:]
 
     loc = entry.find("===Further reading===")
