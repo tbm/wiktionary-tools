@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Move Baldi reference from references to etymology section
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+BALDI_REF = r"\n\* (\{\{R:sw:Baldi:2020.*\}\})"
+
+
+@click.command()
+@click.argument("page")
+@click.option("--lang", default="sw", help="Language code")
+def move_ref_baldi(page, lang):
+    """
+    Move Baldi reference from references to etymology section
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = old_text
+    match = re.search(BALDI_REF, old_text)
+    if not match:
+        print("Can't find reference to Baldi (2020)")
+        sys.exit(1)
+    ref_text = "<ref>" + match.group(1) + "</ref>"
+    new_text = re.sub(BALDI_REF, "", new_text)
+    new_text = kamusi.add_ety_ref(new_text, ref_text)
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog("Move reference to etymology", lang)
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=True)
+
+
+if __name__ == "__main__":
+    move_ref_baldi()  # pylint: disable=no-value-for-parameter
