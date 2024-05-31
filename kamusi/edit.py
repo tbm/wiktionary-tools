@@ -18,11 +18,17 @@ def add_category(entry, category, lang):
     return entry.rstrip() + "\n\n" + cat + "\n"
 
 
-def add_ety_ref(entry, ref):
+def add_ety_ref(entry, ref, etymology=None):
     """
     Add a reference to the etymology
     """
-    loc = entry.find("}}.")
+    if etymology:
+        loc = entry.find("===Etymology " + str(etymology) + "===")
+    else:
+        loc = entry.find("===Etymology===")
+    if loc == -1:
+        raise ValueError("Can't find etymology header")
+    loc = entry.find("}}.", loc)
     if loc == -1:
         raise NotImplementedError
     loc += 3

@@ -23,7 +23,10 @@ import kamusi
 @click.argument("pageno")
 @click.argument("ref")
 @click.option("--lang", default="sw", help="Language code")
-def add_ref_baldi(page, pageno, ref, lang):
+@click.option(
+    "--etymology", required=False, type=int, help="Number of etymology section"
+)
+def add_ref_baldi(page, pageno, ref, lang, etymology):
     """
     Add Baldi (2020) reference to page
     """
@@ -34,7 +37,11 @@ def add_ref_baldi(page, pageno, ref, lang):
         print(f"No page {page} for language {lang}")
         sys.exit(1)
     ref_text = "<ref>{{R:sw:Baldi:2020|page=" + pageno + " Nr. " + ref + "}}</ref>"
-    new_text = kamusi.add_ety_ref(old_text, ref_text)
+    try:
+        new_text = kamusi.add_ety_ref(old_text, ref_text, etymology)
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
     if old_text == new_text:
         print("No change")
         sys.exit(1)
