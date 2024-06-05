@@ -37,6 +37,9 @@ def add_ref_baldi(page, pageno, ref, lang, etymology):
         print(f"No page {page} for language {lang}")
         sys.exit(1)
     ref_text = "<ref>{{R:sw:Baldi:2020|page=" + pageno + " Nr. " + ref + "}}</ref>"
+    if ref_text in old_text:
+        print("This Baldi reference exists already")
+        sys.exit(1)
     try:
         new_text = kamusi.add_ety_ref(old_text, ref_text, etymology)
     except ValueError as e:
