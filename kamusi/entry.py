@@ -30,3 +30,17 @@ def get_entry(text, lang, site="en", strip=False):
     if strip:
         return text.rstrip()
     return text
+
+
+def get_section(entry, title):
+    """
+    Return a specific section of an entry
+    """
+    loc = entry.find("===" + title + "===")
+    if loc == -1:
+        return None
+    entry = entry[loc:]
+    loc = entry.find("\n\n")
+    if loc == -1:
+        return entry
+    return entry[: loc + 1]
