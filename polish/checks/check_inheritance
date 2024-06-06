@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2023  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Check for Polish words that are descendants of Old Polish but
+don't mention the inheritance in the etymology section.
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+import re
+
+import kamusi
+
+import mwparserfromhell
+
+DIR_PL = Path("/home/tbm/tmp/wiktionary/polish")
+DIR_OLD_PL = Path("/home/tbm/tmp/wiktionary/old-polish")
+
+
+def get_desc(entry, lang):
+    """
+    Get descendants for a specific language
+    """
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("* {{desc|"):
+            wikicode = mwparserfromhell.parse(line)
+            for template in wikicode.filter_templates():
+                if str(template.name) != "desc":
+                    continue
+                if template.params[0] != lang:
+                    continue
+                for param in template.params[1:]:
+                    if not param.showkey:
+                        yield str(param).split("<", 1)[0]
+
+
+def get_all_desc(directory, lang):
+    """
+    Get descendants from one language for a specific language
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        for desc in get_desc(entry, lang):
+            yield desc
+
+
+def check_desc(entry, ety_lang):
+    """
+    Check if an entry refers to another language in terms of inheritance
+    """
+    if "{{alt form of|pl" in entry:
+        return True
+    if "{{alt form|pl" in entry:
+        return True
+    re_ety_inherit = re.compile(r"(inh|der)\+?\|pl\|" + ety_lang)
+    for line in entry.splitlines(keepends=True):
+        if re.search(re_ety_inherit, line):
+            return True
+    # Fallback option but this is too broad...
+    ety = kamusi.get_section(entry, "Etymology")
+    if ety and ety_lang in ety:
+        return True
+    return False
+
+
+def main():
+    """
+    Check all entries in the directory
+    """
+    pl_desc = set(get_all_desc(DIR_OLD_PL, "pl"))
+    for filepath in sorted(DIR_PL.glob("*")):
+        if filepath.name not in pl_desc:
+            continue
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        if not check_desc(entry, "zlw-opl"):
+            print(filepath.name)
+
+
+if __name__ == "__main__":
+    main()
