@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Find entries with missing {{trans-bottom}}
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+
+import click
+
+
+def check_missing_trans_bottom(entry_name, entry):
+    """
+    Check whether {{trans-bottom}}" is missing for a translation box
+    """
+    in_trans = False
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("{{trans-top"):
+            in_trans = True
+        elif line.startswith("{{checktrans-top"):
+            in_trans = True
+        elif line.startswith("{{trans-bottom"):
+            in_trans = False
+        elif line.startswith("{{multitrans"):
+            pass
+        elif in_trans and (not line.strip() or line.startswith("{{")):
+            print(entry_name)
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+def check_all_entries(directory):
+    """
+    Check all entries in the directory
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check_missing_trans_bottom(filepath.name, entry)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
