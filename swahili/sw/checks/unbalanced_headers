@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2023  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Check for unbalanced headers
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+import re
+
+DIR = Path("/home/tbm/wiktionary-tools/swahili/sw/download/sw")
+
+
+def check_unbalanced_headers(entry_name, entry):
+    """
+    Check the entry for unbalanced headers
+    """
+    for line in entry.splitlines():
+        if line.startswith("=="):
+            header = re.split("[^=]+", line)
+            if header[0] != header[1]:
+                print(f"Mismatch header in {entry_name}: {line.strip('=')}")
+
+
+def check_all_entries(directory, check):
+    """
+    Check all entries in the directory
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check(filepath.name, entry)
+
+
+if __name__ == "__main__":
+    check_all_entries(DIR, check_unbalanced_headers)
