@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+r"""
+Fix cosmetic issues in translations
+
+Search with:
+
+rg "\*.*\{\{t.*\}\},\{\{t"
+
+rg "\*.*\w:\{\{t"
+rg "\*.*\w\s+:\{\{t"
+
+
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+RE_TRANS = re.compile(r"\*+:*\s*(?P<lang>[^:{]+)[:：]\s*(?P<def>[^\s].*)?")
+
+
+def fix_cosmetic_issues(entry):
+    """
+    Fix cosmetic issues in translations
+    """
+    in_trans = False
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("{{trans-top"):
+            in_trans = True
+        elif line.startswith("{{checktrans-top"):
+            in_trans = True
+        elif line.startswith("{{trans-bottom") or not line.strip():
+            in_trans = False
+        elif in_trans:
+            match = RE_TRANS.search(line)
+            if match:
+                line = line.replace("}},{{", "}}, {{")
+                line = re.sub(r"([a-z])\s*:\s*\{\{", r"\1: {{", line)
+        yield line
+
+
+@click.command()
+@click.argument("page")
+def main(page):
+    """
+    Fix cosmetic issues in translations
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    lang = "en"
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_cosmetic_issues(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* Translations */ Fix cosmetic issues"
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=True)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter

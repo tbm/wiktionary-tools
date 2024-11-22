@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Fix language names in translations
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+RE_TRANS = re.compile(r"(?P<start>\*:*)\s*(?P<lang>[^:]+)[:：]\s*(?P<def>[^\s].*)?")
+
+MAP = {
+    "Albania": "Albanian",
+    "Albanina": "Albanian",
+    "Albanisn": "Albanian",
+    "Allemanic German": "Alemannic German",
+    "Arabjc": "Arabic",
+    "Arab": "Arabic",
+    "Arabian": "Arabic",
+    "Assyrian Neo Aramaic": "Assyrian Neo-Aramaic",
+    "Belarussian": "Belarusian",
+    "Catalam": "Catalan",
+    "Croatian": "Serbo-Croatian",
+    "Finnis": "Finnish",
+    "Français": "French",
+    "Gernam": "German",
+    "Gernan": "German",
+    "GReek": "Greek",
+    "Ηebrew": "Hebrew",
+    "Italia": "Italian",
+    "Itaian": "Italian",
+    "Italiano": "Italian",
+    "Norsk": "Nynorsk",
+    "Nynorsh": "Nynorsk",
+    "Nynorskl": "Nynorsk",
+    "Norweigan": "Norwegian",
+    "Northern Sámi": "Northern Sami",
+    "Japaneae": "Japanese",
+    "Papantle Totonec": "Papantla Totonac",
+    "Plauttdietsch": "Plautdietsch",
+    "Poliah": "Polish",
+    "Pollish": "Polish",
+    "Portugal": "Portuguese",
+    "Portugese": "Portuguese",
+    "Portguese": "Portuguese",
+    "Portughese": "Portuguese",
+    "Portuugese": "Portuguese",
+    "Romaniann": "Romanian",
+    "Rumanian": "Romanian",
+    "Russia": "Russian",
+    "Russsian": "Russian",
+    "Romansh": "Romansch",
+    "Rumansch": "Romansch",
+    "Sinhala": "Sinhalese",
+    "Sweidsh": "Swedish",
+    "Tagaloh": "Tagalog",
+    "Turkis": "Turkish",
+    "Vietnam": "Vietnamese",
+    "Vietnamee": "Vietnamese",
+    "Waray Waray": "Waray-Waray",
+    "Waray-waray": "Waray-Waray",
+    "We;sh": "Welsh",
+}
+
+
+def fix_lang_name(entry):
+    """
+    Fix language names in translations
+    """
+    in_trans = False
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("{{trans-top"):
+            in_trans = True
+        elif line.startswith("{{checktrans-top"):
+            in_trans = True
+        elif line.startswith("{{trans-bottom") or not line.strip():
+            in_trans = False
+        elif in_trans:
+            print(line)
+            match = RE_TRANS.search(line)
+            if match:
+                lang = match.group(2)
+                lang = MAP.get(lang, lang)
+                line = match.group(1) + " " + lang + ":"
+                if match.group(3):
+                    line += " " + match.group(3)
+                line += "\n"
+        yield line
+
+
+@click.command()
+@click.argument("page")
+def main(page):
+    """
+    Fix language names in translations
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    lang = "en"
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_lang_name(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* Translations */ Fix language name"
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter

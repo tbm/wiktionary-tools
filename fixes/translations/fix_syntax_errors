@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Fix syntax errors in translations
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+RE_FOO = re.compile(r"\*+:*\s*(?P<lang>[^:{]+)[:：]\s*(?P<def>[^\s].*)?")
+
+
+def fix_trans_syntax(entry):
+    """
+    Fix syntax errors in translations
+    """
+    in_trans = False
+    previous = ""
+    for line in entry.splitlines(keepends=True):
+        if line.startswith("{{trans-top"):
+            in_trans = True
+        elif line.startswith("{{checktrans-top"):
+            in_trans = True
+        elif line.startswith("{{trans-bottom") or not line.strip():
+            in_trans = False
+        elif in_trans:
+            match = RE_FOO.search(line)
+            if not match:
+                # Add missing *
+                if match := re.match(r"#?\s*([A-Z][^{]+)\s*(\{\{t.+)", line):
+                    delim = "*"
+                    if (
+                        "Chinese" in previous
+                        or "Geek" in previous
+                        or "Norwegian" in previous
+                    ):
+                        delim = "*:"
+                    line = (
+                        delim
+                        + " "
+                        + match.group(1).rstrip('":; ')
+                        + ": "
+                        + match.group(2)
+                        + "\n"
+                    )
+                elif line.startswith("Greek") or line.startswith("Norwegian:"):
+                    line = "* " + line
+                # Add missing language
+                elif match := re.match(
+                    r"(\*:*)?\s*(\{\{(t|no equivalent translation).*)", line
+                ):
+                    lang = re.search(r"\{\{[^|]+\|([^|}]+)", match.group(2))
+                    lang = kamusi.code_to_name(lang.group(1))
+                    delim = match.group(1) or "*"
+                    # FIXME: why
+                    if lang not in previous:
+                        line = delim + " " + lang + ": " + match.group(2) + "\n"
+                # Add missing colon
+                elif match := re.match(r"(\*:*\s*[^:{]+)\s*(\{\{t.+)", line):
+                    line = match.group(1).rstrip('"; ') + ": " + match.group(2) + "\n"
+            # Remove double colon
+            line = re.sub(r"([a-z]):\s*:\s*\{\{", r"\1: {{", line)
+        previous = line
+        yield line
+
+
+@click.command()
+@click.argument("page")
+def main(page):
+    """
+    Fix syntax errors in translations
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    lang = "en"
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_trans_syntax(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* Translations */ Fix syntax error"
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
