@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+"""
+Check for wrong language names in translations
+"""
+
+import csv
+from pathlib import Path
+import re
+
+import click
+
+
+RE_TRANS = re.compile(r"\*+:*\s*(?P<lang>[^:]+):\s*(?P<def>[^\s].*)?")
+
+
+# Download CSV file from here:
+# https://en.wiktionary.org/wiki/Wiktionary:List_of_languages,_csv_format
+def get_lang():
+    """
+    Get valid languages
+    """
+    filename = "Wiktionary:List_of_languages,_csv_format"
+    with open(filename, "r", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=";")
+        for line in reader:
+            yield line["canonical name"]
+            for lang in line["other names"].split(","):
+                yield lang
+
+
+def get_translations(text):
+    """
+    Get translations
+    """
+    pattern = (
+        r"{{(trans-top|trans-top-also|checktrans-top)\|?(.*?)?}}\n(.*?){{trans-bottom}}"
+    )
+    for match in re.findall(pattern, text, re.DOTALL):
+        yield [line.strip() for line in match[2].split("\n") if line.strip()]
+
+
+def check_translations(entry_name, text, valid_lang):
+    """
+    Find invalid language names in translations
+    """
+    for translations in get_translations(text):
+        for trans in translations:
+            match = RE_TRANS.search(trans)
+            if not match:
+                # print("Can't parse:", entry_name, "->", trans)
+                continue
+            if match.group(1) not in valid_lang:
+                print(entry_name + ": " + match.group(1))
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+def check_all_entries(directory):
+    """
+    Check all entries in the directory
+    """
+    valid_lang = set(get_lang())
+    valid_lang.update(
+        set(
+            [
+                "Kurdish",
+                "Ancient",
+                "Cyrillic",
+                "Bokmål",
+                "Nynorsk",
+                "Roman",
+                "Brazilian",
+                "European",
+            ]
+        )
+    )
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        with open(filepath, "r", encoding="utf-8") as entry_fp:
+            entry = entry_fp.read()
+        check_translations(filepath.name, entry, valid_lang)
+
+
+if __name__ == "__main__":
+    check_all_entries()  # pylint: disable=no-value-for-parameter
