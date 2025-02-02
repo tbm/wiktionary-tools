@@ -41,7 +41,7 @@ def add_arabic_root(page, root, lang):
         print("Page lists different root")
         sys.exit(1)
     new_text = old_text
-    new_text = re.sub(r"(\|...?|ar\|[^}]+\}\}\.)\n", r"\1 " + root + "\n", new_text)
+    new_text = re.sub(r"(\|...?\|ar\|[^}]+\}\}\.)\n", r"\1 " + root + "\n", new_text)
     if old_text == new_text:
         print("No change")
         sys.exit(1)
