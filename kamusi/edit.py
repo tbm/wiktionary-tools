@@ -52,7 +52,7 @@ def add_ref(entry, ref):
     if loc == -1:
         loc = entry.find("===Anagrams===")
     if loc == -1:
-        if match := re.search(r"(\{\{\s*(topics|c|C|cln)\s*\||\[\[Category:\w+:)", entry):
+        if match := re.search(r"^(\{\{\s*(topics|c|C|cln)\s*\||\[\[Category:\w+:)", entry):
             loc = match.start()
     if loc == -1:
         entry = entry.rstrip("\n") + "\n\n"
