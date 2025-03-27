@@ -23,15 +23,19 @@ def add_ety_ref(entry, ref, etymology=None):
     Add a reference to the etymology
     """
     if etymology:
-        loc = entry.find("===Etymology " + str(etymology) + "===")
+        ety_loc = entry.find("===Etymology " + str(etymology) + "===")
     else:
-        loc = entry.find("===Etymology===")
-    if loc == -1:
+        ety_loc = entry.find("===Etymology===")
+    if ety_loc == -1:
         raise ValueError("Can't find etymology header")
-    loc = entry.find("}}.", loc)
+    loc = entry.find("</ref>", ety_loc)
+    add_to_loc = 6
+    if loc == -1:
+        loc = entry.find("}}.", ety_loc)
+        add_to_loc = 3
     if loc == -1:
         raise NotImplementedError
-    loc += 3
+    loc += add_to_loc
     entry = entry[:loc] + ref + entry[loc:]
     return add_reflist(entry)
 
