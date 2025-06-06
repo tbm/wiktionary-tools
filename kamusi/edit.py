@@ -34,6 +34,9 @@ def add_ety_ref(entry, ref, etymology=None):
         loc = entry.find("}}.", ety_loc)
         add_to_loc = 3
     if loc == -1:
+        loc = entry.find("}}\n", ety_loc)
+        add_to_loc = 2
+    if loc == -1:
         raise NotImplementedError
     loc += add_to_loc
     entry = entry[:loc] + ref + entry[loc:]
