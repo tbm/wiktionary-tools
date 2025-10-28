@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Add a reference to Gower (1952)
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+@click.command()
+@click.argument("page")
+@click.argument("pageno")
+@click.option("--lang", default="sw", help="Language code")
+@click.option("--text", required=False, type=str, help="Cited text")
+@click.option(
+    "--etymology", required=False, type=int, help="Number of etymology section"
+)
+def add_ref_baldi(page, pageno, lang, text, etymology):
+    """
+    Add Gower (1952) reference to page
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    if text:
+        text = "|text=" + text
+    else:
+        text = ""
+    ref_text = "<ref>{{R:sw:Gower:1952|page=" + pageno + text + "}}</ref>"
+    if ref_text in old_text:
+        print("This Gower reference exists already")
+        sys.exit(1)
+    try:
+        new_text = kamusi.add_ety_ref(old_text, ref_text, etymology)
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog("Add reference to Gower (1952)", lang)
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    add_ref_baldi()  # pylint: disable=no-value-for-parameter
