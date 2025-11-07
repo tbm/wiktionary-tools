@@ -105,10 +105,10 @@ def add_wikipedia(entry, lang, wikipedia=None):
     if "{{wikipedia" in entry or "{{wp" in entry:
         return entry
     first_break = entry.find("\n\n") + 1
-    wp = "{{wikipedia"
-    if wikipedia:
-        wp += "|" + wikipedia
+    wp = "{{wp"
     if lang != "en":
-        wp += "|lang=" + lang
+        wp += "|" + lang + ":"
+    if wikipedia:
+        wp += wikipedia
     wp += "}}"
     return entry[:first_break] + wp + "\n" + entry[first_break:]
