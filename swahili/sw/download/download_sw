@@ -39,7 +39,7 @@ def get_entry(text, lang, strip=False):
     """
     Get the entry for a specific language from a text
     """
-    start = re.search(r"==\s*\{\{" + lang + r"\s*\}\}\s*==", text)
+    start = re.search(r"==\s*\{\{(--?\|)?" + lang + r"\s*\}\}\s*==", text)
     if not start:
         return None
     text = text[start.start() :]
