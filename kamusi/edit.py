@@ -28,13 +28,14 @@ def add_ety_ref(entry, ref, etymology=None):
         ety_loc = entry.find("===Etymology===")
     if ety_loc == -1:
         raise ValueError("Can't find etymology header")
-    loc = entry.find("</ref>", ety_loc)
+    next_ety_loc = entry.find("===Etymology ", ety_loc + 1)
+    loc = entry.find("</ref>", ety_loc, next_ety_loc)
     add_to_loc = 6
     if loc == -1:
-        loc = entry.find("}}.", ety_loc)
+        loc = entry.find("}}.", ety_loc, next_ety_loc)
         add_to_loc = 3
     if loc == -1:
-        loc = entry.find("}}\n", ety_loc)
+        loc = entry.find("}}\n", ety_loc, next_ety_loc)
         add_to_loc = 2
     if loc == -1:
         raise NotImplementedError
