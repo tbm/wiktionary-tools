@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Find possible etymology matches for nouns based on verbs
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+from pathlib import Path
+
+DIR = Path("/home/tbm/tmp/wiktionary/swahili")
+
+PREFIXES = ("", "ki", "m", "mu", "mw", "u")
+
+
+def has_section(filepath, section):
+    """
+    Check if a file has a specific section
+    """
+    with open(filepath, "r", encoding="utf-8") as entry_fp:
+        for line in entry_fp.readlines():
+            if "===" + section + "===" in line:
+                return True
+    return False
+
+
+def has_section_starting_with(filepath, section):
+    """
+    Check if a file has a section that starts with a particular
+    word.  This is useful for Etymology X
+    """
+    with open(filepath, "r", encoding="utf-8") as entry_fp:
+        for line in entry_fp.readlines():
+            if "===" + section in line:
+                return True
+    return False
+
+
+def is_alt_form(filepath):
+    """
+    Check if a file is an alt form
+    """
+    with open(filepath, "r", encoding="utf-8") as entry_fp:
+        for line in entry_fp.readlines():
+            if "{{alternative " in line:
+                return True
+            if "{{alt " in line:
+                return True
+    return False
+
+
+def get_nouns(directory):
+    """
+    Get all nouns from the files in a directory
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        if has_section(filepath, "Noun"):
+            yield filepath.stem
+
+
+def get_verbs(directory):
+    """
+    Get all verbs from the files in a directory
+    """
+    for filepath in sorted(directory.glob("*")):
+        if not filepath.is_file():
+            continue
+        if has_section(filepath, "Verb"):
+            yield filepath.stem
+
+
+def find_etymology_matches(directory):
+    """
+    Find possible etymology matches for nouns based on verbs
+    """
+    verbs = list(get_verbs(directory))
+    for noun in get_nouns(directory):
+        filepath = directory / Path(noun)
+        if " " in noun:
+            continue
+        if has_section_starting_with(filepath, "Etymology"):
+            continue
+        if is_alt_form(filepath):
+            continue
+        for verb in verbs:
+            for prefix in PREFIXES:
+                if noun == prefix + verb[:-1] + "o":
+                    print(noun, verb)
+                if noun == prefix + verb + "ji":
+                    print(noun, verb)
+                # Deduplication
+                if noun == prefix + verb + verb[:-1] + "o":
+                    print(noun, verb)
+                if noun == prefix + verb + verb:
+                    print(noun, verb)
+
+
+if __name__ == "__main__":
+    find_etymology_matches(DIR)
