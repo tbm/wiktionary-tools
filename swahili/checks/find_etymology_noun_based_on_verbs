@@ -94,7 +94,7 @@ def find_etymology_matches(directory):
                     print(noun, verb)
                 if noun == prefix + verb + "ji":
                     print(noun, verb)
-                # Deduplication
+                # Reduplication
                 if noun == prefix + verb + verb[:-1] + "o":
                     print(noun, verb)
                 if noun == prefix + verb + verb:
