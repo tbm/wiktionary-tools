@@ -55,7 +55,7 @@ def check_file(filepath):
             if "{{bor+|sw|en|" in line:
                 return False
             if is_etymology(line):
-                if "ana|" in line:
+                if "ana|" in line or "ana>" in line:
                     return False
             if "{{alt form" in line or "{{alternative form" in line:
                 return False
