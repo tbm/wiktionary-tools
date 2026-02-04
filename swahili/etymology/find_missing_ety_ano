@@ -43,6 +43,8 @@ def is_etymology(line):
         return True
     if "From {{m|" in line:
         return True
+    if "{{surf|" in line:
+        return True
     return False
 
 
