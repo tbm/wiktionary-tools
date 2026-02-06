@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+r"""
+Add missing dash to prefix in affix template
+
+You can use this search to find incorrect entries:
+    rg "\{\{(af|affix).sw\|\w\w?\|"
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import sys
+
+import click
+import mwparserfromhell
+import pywikibot
+
+import kamusi
+
+
+def add_missing_dash_affix(text):
+    """
+    Add dash to a prefix in the affix template if necessary.
+    """
+    wikicode = mwparserfromhell.parse(text)
+
+    for template in wikicode.filter_templates():
+        template_name = str(template.name).strip()
+
+        if template_name in ("af", "affix"):
+            # Get positional parameters (non-named)
+            positional_params = [p for p in template.params if not p.showkey]
+
+            # First positional param is the language code
+            # Second positional param is the prefix - add hyphen if not already present
+            if len(positional_params) >= 2:
+                prefix = str(positional_params[1].value).strip()
+                if not prefix.endswith("-") and len(prefix) <= 2:
+                    positional_params[1].value = prefix + "-"
+
+    return str(wikicode)
+
+
+def fix_prefix_in_affix(entry):
+    """
+    Fix prefix in affix template to add dash if necessary
+    """
+    for line in entry.splitlines(keepends=True):
+        if "{{af" in line:
+            line = add_missing_dash_affix(line)
+        yield line
+
+
+@click.command()
+@click.argument("page")
+@click.option("--lang", default="sw", help="Language code")
+def main(page, lang):
+    """
+    Add missing dash in affix
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_prefix_in_affix(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog("Add dash to prefix in affix template", lang)
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
