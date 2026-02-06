@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+r"""
+Convert prefix to affix template
+
+You can use this search to find entries to convert:
+    rg "\{\{(pre|prefix)\|sw\|\w\w?-?\|"
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import sys
+
+import click
+import mwparserfromhell
+import pywikibot
+
+import kamusi
+
+
+def convert_prefix_to_affix_template(text):
+    """
+    Convert prefix to affix templates.  Add a hyphen to the first
+    parameter (the prefix).
+    """
+    wikicode = mwparserfromhell.parse(text)
+
+    for template in wikicode.filter_templates():
+        template_name = str(template.name).strip()
+
+        if template_name in ("pre", "prefix"):
+            # Change the template name
+            template.name = "affix"
+
+            # Get positional parameters (non-named)
+            positional_params = [p for p in template.params if not p.showkey]
+
+            # First positional param is the language code
+            # Second positional param is the prefix - add hyphen if not already present
+            if len(positional_params) >= 2:
+                first_morpheme = str(positional_params[1].value).strip()
+                if not first_morpheme.endswith("-"):
+                    positional_params[1].value = first_morpheme + "-"
+
+    return str(wikicode)
+
+
+def convert_prefix_to_affix(entry):
+    """
+    Process entry and replace prefix templates
+    """
+    for line in entry.splitlines(keepends=True):
+        if "{{pre" in line:
+            line = convert_prefix_to_affix_template(line)
+        yield line
+
+
+@click.command()
+@click.argument("page")
+@click.option("--lang", default="sw", help="Language code")
+def main(page, lang):
+    """
+    Convert prefix to affix template
+    """
+    site = pywikibot.Site("en", "wiktionary")
+    page = pywikibot.Page(site, page)
+    old_text = kamusi.get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(convert_prefix_to_affix(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = kamusi.format_changelog("Convert prefix to affix template", lang)
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=True)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
