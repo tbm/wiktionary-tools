@@ -42,9 +42,9 @@ def convert_prefix_to_affix_template(text):
             # First positional param is the language code
             # Second positional param is the prefix - add hyphen if not already present
             if len(positional_params) >= 2:
-                first_morpheme = str(positional_params[1].value).strip()
-                if not first_morpheme.endswith("-"):
-                    positional_params[1].value = first_morpheme + "-"
+                prefix = str(positional_params[1].value).strip()
+                if not prefix.endswith("-"):
+                    positional_params[1].value = prefix + "-"
 
     return str(wikicode)
 
