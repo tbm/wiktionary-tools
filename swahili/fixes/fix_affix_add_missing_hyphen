@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 r"""
-Add missing dash to prefix in affix template
+Add missing hyphen to prefix in affix template
 
 You can use this search to find incorrect entries:
     rg "\{\{(af|affix).sw\|\w\w?\|"
@@ -22,9 +22,9 @@ import pywikibot
 import kamusi
 
 
-def add_missing_dash_affix(text):
+def add_missing_hyphen_affix(text):
     """
-    Add dash to a prefix in the affix template if necessary.
+    Add hyphen to a prefix in the affix template if necessary.
     """
     wikicode = mwparserfromhell.parse(text)
 
@@ -47,11 +47,11 @@ def add_missing_dash_affix(text):
 
 def fix_prefix_in_affix(entry):
     """
-    Fix prefix in affix template to add dash if necessary
+    Fix prefix in affix template to add hyphen if necessary
     """
     for line in entry.splitlines(keepends=True):
         if "{{af" in line:
-            line = add_missing_dash_affix(line)
+            line = add_missing_hyphen_affix(line)
         yield line
 
 
@@ -60,7 +60,7 @@ def fix_prefix_in_affix(entry):
 @click.option("--lang", default="sw", help="Language code")
 def main(page, lang):
     """
-    Add missing dash in affix
+    Add missing hyphen in affix
     """
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
@@ -72,7 +72,7 @@ def main(page, lang):
     if old_text == new_text:
         print("No change")
         sys.exit(1)
-    changelog = kamusi.format_changelog("Add dash to prefix in affix template", lang)
+    changelog = kamusi.format_changelog("Add hyphen to prefix in affix template", lang)
     print(kamusi.colour_diff(old_text, new_text))
     edit = input("Store edit (Y/n): ")
     if not edit.upper() == "N":
