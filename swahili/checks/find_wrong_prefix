@@ -1,0 +1,9 @@
+#!/bin/sh
+
+DIR=/home/tbm/tmp/wiktionary/swahili
+
+cd $DIR
+rg "\{\{(af|affix|pre|prefix)\|sw\|[^m]" m*
+rg "\{\{(af|affix|pre|prefix)\|sw\|[^k]" ki*
+rg "\{\{(af|affix|pre|prefix)\|sw\|[^u]" u*
+
