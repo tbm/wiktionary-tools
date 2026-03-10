@@ -21,6 +21,7 @@ LANG_MAP = {
     "pam": "Kapampangan",
     "rw": "Rwanda-Rundi",
     "ss": "Swazi",
+    "bnt-sab-pro": "Proto-Sabaki",
 }
 
 
