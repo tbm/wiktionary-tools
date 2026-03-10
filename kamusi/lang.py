@@ -12,7 +12,6 @@ import mediawiki_langcodes
 
 # Wiktionary-specific overrides
 LANG_MAP = {
-    "bcl": "Bikol Central",
     "ilo": "Ilocano",
     "jam": "Jamaican Creole",
     "lg": "Luganda",
