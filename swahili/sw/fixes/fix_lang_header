@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Fix level of language header
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def fix_lang_header(entry):
+    """
+    Fix level of language header
+    """
+    for line in entry.splitlines(keepends=True):
+        if re.match(r"=+\s*\{\{\s*sw\s*\}\}", line):
+            line = "=={{--|sw}}==\n"
+        yield line
+
+
+@click.command()
+@click.argument("page")
+def main(page):
+    """
+    Fix level of language header
+    """
+    site = pywikibot.Site("sw", "wiktionary")
+    page = pywikibot.Page(site, page)
+    lang = "sw"
+    old_text = page.text
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = "".join(fix_lang_header(old_text))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* {{sw}} */ Fix level of language header"
+    print(kamusi.colour_diff(old_text, new_text))
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
