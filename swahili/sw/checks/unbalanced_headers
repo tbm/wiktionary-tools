@@ -24,7 +24,7 @@ def check_unbalanced_headers(entry_name, entry):
         if line.startswith("=="):
             header = re.split("[^=]+", line)
             if header[0] != header[1]:
-                print(f"Mismatch header in {entry_name}: {line.strip('=')}")
+                print(f"Mismatch header in {entry_name}: {line}")
 
 
 def check_all_entries(directory, check):
