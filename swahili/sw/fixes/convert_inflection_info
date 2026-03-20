@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+r"""
+Convert manual inflection markup to the {{infl}} template.
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def get_entry(text, lang, strip=False):
+    """
+    Get the entry for a specific language from a text
+    """
+    start = re.search(r"==\s*\{\{(--?\|)?" + lang + r"\s*\}\}\s*==", text)
+    if not start:
+        return None
+    text = text[start.start() :]
+    end = re.search(r"\n==[^=]", text)
+    if end:
+        text = text[: end.start() + 1]
+    if strip:
+        return text.rstrip()
+    return text
+
+
+WORD_CLASSES = [
+    "nomino",
+    "kitenzi",
+    "kivumishi",
+    "kiunganishi",
+    "kielezi",
+    "kihusishi",
+    "kirai",
+]
+
+
+def get_word_class(header):
+    """
+    Determine the word class based on the header
+    """
+    # This is a little simplistic but it's better for now until we clean
+    # up all the headers.
+    for word_class in WORD_CLASSES:
+        if word_class in header.lower():
+            return word_class
+    return None
+
+
+RE_NOUN = re.compile(
+    r"('''(?P<lemma>[\w\s]+)''')?\s*\(?[wW]ingi[:;]\s*(''')?(?P<plural>[\w\s]+)\)?(''')?\)?"
+)
+
+
+def process_noun(line, page_name):
+    """
+    Process inflection information for a noun, including lemma and plural
+    """
+    if match := RE_NOUN.match(line):
+        print(match.groups())
+        if match.group("lemma") and match.group("lemma").lower() != page_name.lower():
+            print("Mismatch:", match.group("lemma"), page_name)
+            sys.exit(1)
+        line = "{{infl|sw|nomino"
+        plural = match.group("plural")
+        if plural:
+            plural = plural.strip()
+            # Sometimes the plural is incorrectly capitalized
+            # so let's use the first letter of the page name
+            # (but only if they are the same letter).
+            if page_name[0].lower() == plural[0].lower():
+                plural = page_name[0] + plural[1:]
+            line += "||wingi|" + plural
+        line += "}}\n"
+    return line
+
+
+def convert_infl_info(entry, page_name):
+    """
+    Convert manual inflection markup to the {{infl}} template.
+    """
+    last_line = None
+    for line in entry.splitlines(keepends=True):
+        word_class = get_word_class(last_line or "")
+        if match := re.match(r"'''([\w\s]+)'''\s*$", line):
+            lemma = match.group(1).strip()
+            if lemma.lower() == page_name.lower():
+                line = "{{infl|sw|" + word_class + "}}\n"
+            else:
+                print("Mismatch:", lemma, page_name)
+                sys.exit(1)
+        elif word_class == "nomino":
+            line = process_noun(line, page_name)
+        yield line
+        last_line = line
+
+
+@click.command()
+@click.argument("page_name")
+@click.option("--lang", default="sw", help="Language code")
+def main(page_name, lang):
+    """
+    Convert manual inflection markup to the template.
+    """
+    site = pywikibot.Site("sw", "wiktionary")
+    page = pywikibot.Page(site, page_name)
+    lang = "sw"
+    old_text = get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = old_text
+    new_text = "".join(convert_infl_info(new_text, page_name))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* {{sw}} */ Convert inflection info to template"
+    print(kamusi.colour_diff(old_text, new_text))
+    print(new_text)
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
