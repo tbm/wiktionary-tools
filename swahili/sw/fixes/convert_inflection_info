@@ -72,7 +72,6 @@ def process_noun(line, page_name):
     Process inflection information for a noun, including lemma and plural
     """
     if match := RE_NOUN.match(line):
-        print(match.groups())
         if match.group("lemma") and match.group("lemma").lower() != page_name.lower():
             print("Mismatch:", match.group("lemma"), page_name)
             sys.exit(1)
