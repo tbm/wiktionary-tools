@@ -6,6 +6,10 @@
 
 r"""
 Convert manual inflection markup to the {{infl}} template.
+
+Find with these regex:
+    rg -U "===\n'''[\w\s-]+'''\n"
+    rg -U "===\n('''[\w\s]+''')?\s*\(?wingi[:;]\s*(''')?[\w\s-]+\)?(''')?\)?"
 """
 
 __license__ = "GPL-3.0-or-later"

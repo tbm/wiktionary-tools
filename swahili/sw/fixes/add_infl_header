@@ -4,9 +4,11 @@
 # License: GNU General Public License (GPL), version 3 or above
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-"""
+r"""
 Add missing {{infl}} header.
 
+Find with this regex:
+    rg -U "===.*===\n(\n)*#"
 """
 
 __license__ = "GPL-3.0-or-later"
