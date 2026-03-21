@@ -9,6 +9,7 @@ Remove empty lines between header and inflection info
 
 Find with this regex:
     rg -l -U "===+\s*.*===+\n\n+\{\{infl"
+    rg -l -U "===+\s*.*===+\n\n+\'''"
 """
 
 __license__ = "GPL-3.0-or-later"
@@ -46,7 +47,7 @@ def main(page):
         print(f"No page {page} for language {lang}")
         sys.exit(1)
     new_text = old_text
-    new_text = re.sub(r"(===+[^=]+===+\n)\n+(\{\{infl)", r"\1\2", new_text)
+    new_text = re.sub(r"(===+[^=]+===+\n)\n+(\{\{infl|''')", r"\1\2", new_text)
     if old_text == new_text:
         print("No change")
         sys.exit(1)
