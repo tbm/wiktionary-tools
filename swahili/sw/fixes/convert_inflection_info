@@ -63,7 +63,7 @@ def get_word_class(header):
 
 
 RE_NOUN = re.compile(
-    r"('''(?P<lemma>[\w\s]+)''')?\s*\(?[wW]ingi[:;]\s*(''')?(?P<plural>[\w\s-]+)\)?(''')?\)?"
+    r"('''(?P<lemma>[\w\s]+)''')?\s*\(?[wW]ingi[:;]\s*(''')?(?P<plural>[\w\s’'-]+)\)?(''')?\)?"
 )
 
 
