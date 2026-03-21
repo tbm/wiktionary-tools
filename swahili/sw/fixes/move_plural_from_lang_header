@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+r"""
+Move plural from language header to inflection info.
+
+Find with this regex:
+    rg -U "\}\s*==\n\(?wingi: '''"  -l
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+import sys
+
+import click
+import pywikibot
+
+import kamusi
+
+
+def get_entry(text, lang, strip=False):
+    """
+    Get the entry for a specific language from a text
+    """
+    start = re.search(r"==\s*\{\{(--?\|)?" + lang + r"\s*\}\}\s*==", text)
+    if not start:
+        return None
+    text = text[start.start() :]
+    end = re.search(r"\n==[^=]", text)
+    if end:
+        text = text[: end.start() + 1]
+    if strip:
+        return text.rstrip()
+    return text
+
+
+WORD_CLASSES = [
+    "nomino",
+    "kitenzi",
+    "kivumishi",
+    "kiunganishi",
+    "kielezi",
+    "kihusishi",
+    "kirai",
+]
+
+
+def get_word_class(header):
+    """
+    Determine the word class based on the header
+    """
+    # This is a little simplistic but it's better for now until we clean
+    # up all the headers.
+    if not header.startswith("==="):
+        return None
+    for word_class in WORD_CLASSES:
+        if word_class in header.lower():
+            return word_class
+    return None
+
+
+RE_PLURAL = re.compile(r"\(?[wW]ingi[:;]\s*(''')?(?P<plural>[\w\s’'-]+)\)?(''')?\)?")
+
+
+def convert_infl_info(entry, page_name):
+    """
+    Convert manual inflection markup to the {{infl}} template.
+    """
+    last_line = None
+    plural = None
+    for line in entry.splitlines(keepends=True):
+        word_class = get_word_class(last_line or "")
+        if match := RE_PLURAL.match(line):
+            plural = match.group("plural").strip().strip("'")
+            if page_name[0].lower() == plural[0].lower():
+                plural = page_name[0] + plural[1:]
+            line = ""
+        if word_class == "nomino" and plural:
+            # We know the last line was the noun header, but the
+            # current line could be:
+            # * empty line: create new infl header
+            # * infl template: add plural
+            # * definition of the noun: add infl before this line
+            infl = "{{infl|sw|nomino||wingi|" + plural + "}}\n"
+            if not line or line.startswith("{{infl"):
+                line = infl
+            else:
+                line = infl + "\n" + line
+        yield line
+        last_line = line
+
+
+@click.command()
+@click.argument("page_name")
+@click.option("--lang", default="sw", help="Language code")
+def main(page_name, lang):
+    """
+    Convert manual inflection markup to the template.
+    """
+    site = pywikibot.Site("sw", "wiktionary")
+    page = pywikibot.Page(site, page_name)
+    lang = "sw"
+    old_text = get_entry(page.text, lang)
+    if not old_text:
+        print(f"No page {page} for language {lang}")
+        sys.exit(1)
+    new_text = old_text
+    new_text = "".join(convert_infl_info(new_text, page_name))
+    if old_text == new_text:
+        print("No change")
+        sys.exit(1)
+    changelog = "/* {{sw}} */ Convert inflection info to template"
+    print(kamusi.colour_diff(old_text, new_text))
+    print(new_text)
+    edit = input("Store edit (Y/n): ")
+    if not edit.upper() == "N":
+        page.text = page.text.replace(old_text, new_text)
+        page.save(changelog, minor=False)
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
