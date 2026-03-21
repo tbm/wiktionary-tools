@@ -55,6 +55,8 @@ def get_word_class(header):
     """
     # This is a little simplistic but it's better for now until we clean
     # up all the headers.
+    if not header.startswith("==="):
+        return None
     for word_class in WORD_CLASSES:
         if word_class in header.lower():
             return word_class
