@@ -80,7 +80,7 @@ def process_noun(line, page_name):
         line = "{{infl|sw|nomino"
         plural = match.group("plural")
         if plural:
-            plural = plural.strip()
+            plural = plural.strip().strip("'")
             # Sometimes the plural is incorrectly capitalized
             # so let's use the first letter of the page name
             # (but only if they are the same letter).
