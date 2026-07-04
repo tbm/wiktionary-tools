@@ -56,6 +56,10 @@ class EnglishWiktionaryEntry(WiktionaryEntry):
     Entry class for English Wiktionary
     """
 
+class GermanWiktionaryEntry(WiktionaryEntry):
+    """
+    Entry class for German Wiktionary
+    """
 
 class SwahiliWiktionaryEntry(WiktionaryEntry):
     """
@@ -146,7 +150,7 @@ class Also:
         elif self.site_code == "de":
             if not self._also.has("1"):
                 return []
-            return [re.sub(r"[\[\]]", "", x) for x in str(self._also.get("1")).split()]
+            return [re.sub(r"[\[\]]", "", x) for x in str(self._also.get("1")).split(", ")]
         else:
             return []
 
@@ -183,6 +187,7 @@ class WiktionaryPage(ABC):
         self.entry_factory = {
             "en": EnglishWiktionaryEntry,
             "sw": SwahiliWiktionaryEntry,
+            "de": GermanWiktionaryEntry,
         }[site_lang]
 
         if self.page.exists():
@@ -291,6 +296,18 @@ class EnglishWiktionaryPage(WiktionaryPage):
     def _format_also(self, also: List[str]) -> str:
         return "{{also|" + "|".join(also) + "}}\n"
 
+class GermanWiktionaryPage(WiktionaryPage):
+    """
+    Implementation for German Wiktionary.
+    """
+
+    def _get_language_sort_key(self, lang_code: str) -> int:
+        priority_map = {"de": 0}
+        return priority_map.get(lang_code, 999)
+
+    # Not needed anymore, but will clean later.
+    def _format_also(self, also: List[str]) -> str:
+        return "{{Siehe auch|" + "|".join(also) + "}}\n"
 
 class SwahiliWiktionaryPage(WiktionaryPage):
     """
