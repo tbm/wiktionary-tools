@@ -7,70 +7,54 @@ from typing import List, Optional, Dict, Iterator
 from dataclasses import dataclass
 import re
 
+from mwparserfromhell.nodes import Template
 import pywikibot
+import mwparserfromhell
+from mwparserfromhell.wikicode import Wikicode
 from mediawiki_langcodes import name_to_code
 
-import kamusi
+# import kamusi
 
 
-@dataclass
 class WiktionaryEntry:
     """
     Represents a language entry in a Wiktionary page.
     """
-
-    lang_code: str
-    content: str
+    def __init__(self, lang_code: str, content: str) -> None:
+        self.lang_code = lang_code
+        self.content = mwparserfromhell.parse(content)
+        # self.etymology_sections = self._parse_etymology_sections()
 
     def __str__(self):
-        header = f"=={kamusi.code_to_name(self.lang_code)}==\n"
-        return header + self.content.rstrip("\n") + "\n"
+        return str(self.content)
 
     def add_section(self, header: str, content: str, level: int = 3) -> None:
         """
         Add a new section to the entry.
         """
         new_section = f"\n{'=' * level} {header} {'=' * level}\n{content}"
-        self.content += new_section
+        self.content.append(new_section)
 
-    def get_section(self, header: str) -> Optional[str]:
+    def get_sections(self, header: str) -> List[Wikicode]:
         """
         Get content of a specific section within the entry.
         """
-        sections = self._parse_sections()
-        return sections.get(header)
+        return self.content.get_sections(levels=None, matches=f"^{header}$")
 
-    def _parse_sections(self) -> Dict[str, str]:
-        """
-        Parse the entry content into a dictionary of section header -> content.
-        """
-        sections = {}
-        current_section = None
-        current_content = []
+    # Should move these to part-of-speech section class.
+    @property
+    def definitions(self):
+        pass
 
-        for line in self.content.split("\n"):
-            if line.startswith("="):
-                if current_section:
-                    sections[current_section] = "\n".join(current_content).strip()
-                    current_content = []
-                current_section = line.strip("= ")
-            else:
-                current_content.append(line)
-
-        if current_section:
-            sections[current_section] = "\n".join(current_content).strip()
-
-        return sections
+    @definitions.setter
+    def definitions(self):
+        pass
 
 
 class EnglishWiktionaryEntry(WiktionaryEntry):
     """
     Entry class for English Wiktionary
     """
-
-    def __str__(self):
-        header = f"=={kamusi.code_to_name(self.lang_code)}==\n"
-        return header + self.content.rstrip("\n") + "\n"
 
 
 class SwahiliWiktionaryEntry(WiktionaryEntry):
@@ -93,6 +77,94 @@ class SwahiliWiktionaryEntry(WiktionaryEntry):
             if match := re.match(r"\*\s*\{\{(\w+)\}\}\s*:\s*(.*)", line):
                 yield match.groups()
 
+class EtymologySection:
+    """Base class for an etymology section, considered the top-level
+    subdivision of a language entry. Some Wiktionaries have a flat
+    layout, where there is at most 1 etymology section that explains
+    all the senses, in which case there will be only one EtymologySection."""
+
+    def __init__(self, site_code: str, etymology_section: Wikicode, content: Wikicode) -> None:
+        self.etymology_section = etymology_section
+        # self.pos_factory = {"en": EnglishPartOfSpeech, "sw": SwahiliPartOfSpeech}[site_code]
+        self.pos_sections = self._parse_pos_sections()
+
+    def _parse_pos_sections(self) -> None:
+        # for section in self.content.get_sections():
+            pass
+
+class MultipleAlsoError(ValueError):
+    """Error class representing a case where more than one
+    see-also template at the beginning of the page is encountered.
+    This is not supposed to be present, so catch it if it occurs."""
+    pass
+
+# May need to go in another module, but put here for now.
+def get_prelude(page_content: Wikicode) -> Wikicode:
+    """Return all Wikicode preceding the first language
+    section in the page."""
+    return Wikicode(page_content.nodes[:page_content.index(
+        page_content.get_sections([2])[0].nodes[0]
+    )])
+
+class Also:
+    ALSO_TEMPLATES = {"en": "also", "de": "Siehe auch"}
+
+    def _get_also_pattern(self, also_template_name: str) -> str:
+        return rf"^{{{{{also_template_name}\|.*}}}}$"
+
+    def _parse_also(self, content: Wikicode, also_pattern: str) -> List[Template]:
+        return content.filter_templates(matches=also_pattern)
+
+    def __init__(self, site_code: str, page_content: Wikicode):
+        self.site_code = site_code
+
+        also_template_name = self.ALSO_TEMPLATES.get(site_code)
+        if also_template_name is None:
+            return
+
+        also_pattern = self._get_also_pattern(also_template_name)
+        also_templates = self._parse_also(page_content, also_pattern)
+
+        if len(also_templates) == 0:
+            return
+        elif len(also_templates) > 1:
+            raise MultipleAlsoError(also_templates, "Page has more than 1 also template.")
+        self._also = also_templates[0]
+
+        # Error checking ‒ redundant?
+        prelude = get_prelude(page_content)
+        if self._parse_also(prelude, also_pattern) != also_templates:
+            raise ValueError("Misplaced also template (not at beginning of page)", page_content)
+
+    def __repr__(self) -> str:
+        return str(self.also)
+
+    @property
+    def also(self) -> List[str]:
+        if self.site_code == "en":
+            return [str(param.value) for param in self._also.params if param.name.isdigit()]
+        elif self.site_code == "de":
+            if not self._also.has("1"):
+                return []
+            return [re.sub(r"[\[\]]", "", x) for x in str(self._also.get("1")).split()]
+        else:
+            return []
+
+    @also.setter
+    def also(self, value: List[str]) -> None:
+        if self.site_code == "de":
+            self._also.add("1", ", ".join(f"[[{x}]]" for x in value))
+        elif self.site_code == "en":
+            existing = [param.value for param in self._also.params if param.name.isdigit()]
+            current_index = len(existing)
+            # Remove all numeric template parameters and re-add them.
+            for i in range(current_index):
+                self._also.remove(str(i+1))
+            for i, also in enumerate(value):
+                self._also.add(str(i+1), also)
+
+    def add_also(self, also: str) -> None:
+        self.also = self.also + [also]
 
 class WiktionaryPage(ABC):
     """
@@ -104,7 +176,8 @@ class WiktionaryPage(ABC):
         self.site_lang = site_lang
         self.site = self._get_default_site()
         self.page = pywikibot.Page(self.site, title)
-        self.also: List[str] = []
+        self.parsed = mwparserfromhell.parse(self.page.text)
+        self.also = Also(site_lang, self.parsed)
         self.entries: List[WiktionaryEntry] = []
 
         self.entry_factory = {
@@ -115,14 +188,11 @@ class WiktionaryPage(ABC):
         if self.page.exists():
             self._parse_page()
 
-    def __str__(self) -> str:
-        text = ""
-        if self.also:
-            text += self._format_also(self.also)
-        text += "\n".join(str(entry) for entry in self.entries)
-        return text
+    def __repr__(self) -> str:
+        # Use the parsed representation to get a reliable string form.
+        return str(self.parsed)
 
-    def _get_default_site(self) -> pywikibot.Site:
+    def _get_default_site(self) -> pywikibot.site.APISite:
         """
         Return the default site for this Wiktionary edition.
         """
@@ -149,47 +219,14 @@ class WiktionaryPage(ABC):
         """
         Parse the page content into also links and language entries.
         """
-        content = self.page.text
-        current_language = None
-        current_content = []
-
-        for line in content.split("\n"):
-            # Check for "See also" section
-            if line.startswith("{{also"):
-                self.also = line[7:].rstrip("}").split("|")
-            elif line.startswith("==") and not line.startswith("==="):
-                # New language section
-                if current_language:
-                    self.entries.append(
-                        self.entry_factory(
-                            self._map_lang(current_language), "\n".join(current_content)
-                        )
-                    )
-                current_content = []
-                current_language = line.strip("= ")
-            else:
-                current_content.append(line)
-
-        # Handle last section
-        if current_language:
-            self.entries.append(
-                self.entry_factory(
-                    self._map_lang(current_language), "\n".join(current_content)
-                )
-            )
-
-        self._sort_entries()
+        for language_entry in self.parsed.get_sections([2]):
+            self.entries.append(self.entry_factory(self.site_lang, language_entry))
 
     def _sort_entries(self) -> None:
         """
         Sort entries based on language priority and alphabetically.
         """
-        self.entries.sort(
-            key=lambda entry: (
-                self._get_language_sort_key(entry.lang_code),
-                kamusi.code_to_name(entry.lang_code, self.site_lang),
-            )
-        )
+        # TODO
 
     def add_entry(self, entry: WiktionaryEntry) -> None:
         """
@@ -232,10 +269,9 @@ class WiktionaryPage(ABC):
         """
         Add a new "also" link.
         """
-        if link not in self.also:
-            self.also.append(link)
+        self.also.add_also(link)
 
-    def save(self, summary: str = None, minor=False) -> None:
+    def save(self, summary: Optional[str] = None, minor=False) -> None:
         """
         Save the page back to Wiktionary.
         """
