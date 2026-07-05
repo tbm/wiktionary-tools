@@ -66,10 +66,6 @@ class SwahiliWiktionaryEntry(WiktionaryEntry):
     Entry class for Swahili Wiktionary
     """
 
-    def __str__(self):
-        header = "=={{" + self.lang_code + "}}==\n"
-        return header + self.content.rstrip("\n") + "\n"
-
     def get_translations(self):
         """
         Yield translations from a page
