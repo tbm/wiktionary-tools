@@ -141,10 +141,15 @@ class Also:
             raise ValueError("Misplaced also template (not at beginning of page)", page_content)
 
     def __repr__(self) -> str:
-        return str(self.also)
+        return str(self.get())
 
-    @property
-    def also(self) -> List[str]:
+    def __del__(self) -> None:
+        self._also = None
+
+    def get(self) -> List[str]:
+        if self._also is None:
+            return []
+
         if self.site_code == "en":
             return [str(param.value) for param in self._also.params if param.name.isdigit()]
         elif self.site_code == "de":
@@ -154,8 +159,10 @@ class Also:
         else:
             return []
 
-    @also.setter
-    def also(self, value: List[str]) -> None:
+    def set(self, value: List[str]) -> None:
+        if self._also is None:
+            return
+
         if self.site_code == "de":
             self._also.add("1", ", ".join(f"[[{x}]]" for x in value))
         elif self.site_code == "en":
@@ -167,8 +174,11 @@ class Also:
             for i, also in enumerate(value):
                 self._also.add(str(i+1), also)
 
-    def add_also(self, also: str) -> None:
-        self.also = self.also + [also]
+    def add(self, also: str) -> None:
+        self.set(self.get() + [also])
+
+    def wikicode(self) -> Optional[Template]:
+        return self._also
 
 class WiktionaryPage(ABC):
     """
@@ -180,8 +190,8 @@ class WiktionaryPage(ABC):
         self.site_lang = site_lang
         self.site = self._get_default_site()
         self.page = pywikibot.Page(self.site, title)
-        self.parsed = mwparserfromhell.parse(self.page.text)
-        self.also = Also(site_lang, self.parsed)
+        self._parsed = mwparserfromhell.parse(self.page.text)
+        self._also = Also(site_lang, self._parsed)
         self.entries: List[WiktionaryEntry] = []
 
         self.entry_factory = {
@@ -195,7 +205,7 @@ class WiktionaryPage(ABC):
 
     def __repr__(self) -> str:
         # Use the parsed representation to get a reliable string form.
-        return str(self.parsed)
+        return str(self._parsed)
 
     def _get_default_site(self) -> pywikibot.site.APISite:
         """
@@ -224,7 +234,7 @@ class WiktionaryPage(ABC):
         """
         Parse the page content into also links and language entries.
         """
-        for language_entry in self.parsed.get_sections([2]):
+        for language_entry in self._parsed.get_sections([2]):
             self.entries.append(self.entry_factory(self.site_lang, language_entry))
 
     def _sort_entries(self) -> None:
@@ -270,11 +280,33 @@ class WiktionaryPage(ABC):
         """
         return str(self)
 
+    @property
+    def also(self) -> List[str]:
+        return self._also.get()
+
+    @also.setter
+    def also(self, alsos: List[str]) -> None:
+        self._also.set(alsos)
+
+    @also.deleter
+    def also(self) -> None:
+        wikicode = self._also.wikicode()
+        if wikicode is None:
+            return
+        self._parsed.remove(wikicode)
+        del self._also
+        i = 0
+        while i < len(self._parsed.nodes) and not isinstance(self._parsed.nodes[i], mwparserfromhell.nodes.heading.Heading):
+            if self._parsed.nodes[i].isspace():
+                self._parsed.nodes.pop(i)
+            else:
+                i += 1
+
     def add_also(self, link: str) -> None:
         """
         Add a new "also" link.
         """
-        self.also.add_also(link)
+        self._also.add(link)
 
     def save(self, summary: Optional[str] = None, minor=False) -> None:
         """
