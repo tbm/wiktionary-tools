@@ -219,12 +219,6 @@ class WiktionaryPage(ABC):
         Return sort priority for a given language. Lower values come first.
         """
 
-    @abstractmethod
-    def _format_also(self, also: List[str]) -> str:
-        """
-        Format "also" links according to this Wiktionary's conventions.
-        """
-
     def _map_lang(self, lang: str) -> str:
         if lang.startswith("{{"):
             return lang.strip("{}")
@@ -327,9 +321,6 @@ class EnglishWiktionaryPage(WiktionaryPage):
         priority_map = {"mul": 0, "en": 1}
         return priority_map.get(lang_code, 999)
 
-    def _format_also(self, also: List[str]) -> str:
-        return "{{also|" + "|".join(also) + "}}\n"
-
 class GermanWiktionaryPage(WiktionaryPage):
     """
     Implementation for German Wiktionary.
@@ -340,10 +331,6 @@ class GermanWiktionaryPage(WiktionaryPage):
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {"de": 0}
         return priority_map.get(lang_code, 999)
-
-    # Not needed anymore, but will clean later.
-    def _format_also(self, also: List[str]) -> str:
-        return "{{Siehe auch|" + "|".join(also) + "}}\n"
 
 class SwahiliWiktionaryPage(WiktionaryPage):
     """
@@ -357,6 +344,3 @@ class SwahiliWiktionaryPage(WiktionaryPage):
             "sw": 1,
         }
         return priority_map.get(lang_code, 999)
-
-    def _format_also(self, also: List[str]) -> str:
-        return ""
