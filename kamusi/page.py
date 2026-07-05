@@ -285,6 +285,8 @@ class WiktionaryPage(ABC):
             return
         self._parsed.remove(wikicode)
         del self._also
+        # Ensure no empty line is left in the prelude
+        # after the {{also}} template is removed.
         i = 0
         while i < len(self._parsed.nodes) and not isinstance(self._parsed.nodes[i], mwparserfromhell.nodes.heading.Heading):
             if self._parsed.nodes[i].isspace():
