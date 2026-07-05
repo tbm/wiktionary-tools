@@ -320,6 +320,8 @@ class EnglishWiktionaryPage(WiktionaryPage):
     """
     Implementation for English Wiktionary.
     """
+    def __init__(self, title: str):
+        super().__init__(title, site_lang="en")
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {"mul": 0, "en": 1}
@@ -332,6 +334,8 @@ class GermanWiktionaryPage(WiktionaryPage):
     """
     Implementation for German Wiktionary.
     """
+    def __init__(self, title: str):
+        super().__init__(title, site_lang="de")
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {"de": 0}
@@ -345,6 +349,8 @@ class SwahiliWiktionaryPage(WiktionaryPage):
     """
     Implementation for Swahili Wiktionary.
     """
+    def __init__(self, title: str):
+        super().__init__(title, site_lang="sw")
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {
