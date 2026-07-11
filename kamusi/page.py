@@ -217,6 +217,14 @@ class WiktionaryPage(ABC):
         if self.page.exists():
             self._parse_page()
 
+    @classmethod
+    def with_language_edition(cls, title: str, site_lang: str, from_text: Optional[str] = None):
+        subclass = {"en": EnglishWiktionaryPage,
+                    "de": GermanWiktionaryPage,
+                    "sw": SwahiliWiktionaryPage
+                    }[site_lang](title, from_text=from_text)
+        return subclass
+
     def __repr__(self) -> str:
         # Use the parsed representation to get a reliable string form.
         return str(self._parsed)
