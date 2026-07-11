@@ -31,15 +31,33 @@ class KamusiTestCase(unittest.TestCase):
         )
 
 class TestAlso(KamusiTestCase):
-    def test_en_add(self):
-        test_data = self.get_test_data("also", "en_add_new")
+    def run_test_en(self, case: str, action: Callable[[WiktionaryPage], None]):
+        test_data = self.get_test_data("also", case)
 
-        def add_also(test_data):
+        def do_operation_en(test_data):
             page = kamusi.EnglishWiktionaryPage(test_data.page_title, from_text=test_data.before)
-            page.also = ["Hima"]
+            action(page)
             return page
 
-        self.do_wikicode_test(test_data, add_also)
+        self.do_wikicode_test(test_data, do_operation_en)
+
+    def test_en_add(self):
+        def add_also(page):
+            page.also = ["Hima"]
+
+        self.run_test_en("en_add_new", add_also)
+
+    def test_en_modify(self):
+        def modify_also(page):
+            page.also = ["Brother", "broþer"]
+
+        self.run_test_en("en_modify", modify_also)
+
+    def test_en_remove(self):
+        def remove_also(page):
+            del page.also
+
+        self.run_test_en("en_remove", remove_also)
 
 if __name__ == "__main__":
     unittest.main()
