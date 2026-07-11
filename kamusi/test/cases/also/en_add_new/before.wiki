@@ -1,0 +1,172 @@
+==Chamorro==
+
+===Etymology===
+From Pre-Chamorro {{m|und||*xima}}, from {{inh|ch|poz-pro|*kima||giant clam}}.
+
+===Pronunciation===
+* {{IPA|ch|/hi.mæ/}}
+
+===Noun===
+{{head|ch|noun}}
+
+# [[clam]]
+
+{{C|ch|Animals}}
+
+==Finnish==
+
+===Etymology===
+From {{bor|fi|sv|hem}}.
+
+===Pronunciation===
+{{fi-pronunciation}}
+
+===Noun===
+{{fi-noun}} {{tlb|fi|colloquial}}
+
+# [[home]]
+
+====Declension====
+{{fi-decl-kala|him|||a}}
+
+====Derived terms====
+* {{l|fi|kaikki himassa}}
+
+===Further reading===
+* {{R:fi:KTSK|accessdate=2023-07-02}}
+
+===Anagrams===
+* {{anagrams|fi|a=ahim|ahmi}}
+
+==Hiligaynon==
+
+===Noun===
+{{hil-noun}}
+
+# [[ice]]
+#: {{syn|hil|yelo}}
+#: '''''hima''''' kag [[kalayo]]
+#:: '''''ice''''' and [[fire]]
+
+==Indonesian==
+
+===Pronunciation===
+* {{id-pr}}
+
+===Etymology 1===
+
+====Noun====
+{{id-noun}}
+
+# {{lb|id|education}} {{sylabbr of|id|himpunan mahasiswa|t=student association}}
+
+===Etymology 2===
+{{bor+|id|tlb}}.
+
+====Noun====
+{{id-noun}}
+
+# {{ng|food and household furniture given by the woman to the man in return for the dowry given during the marriage procession}}
+
+===Further reading===
+* {{R:KBBI Daring}}
+
+==Jamamadí==
+
+===Verb===
+{{head|jaa|verb}}
+
+# {{lb|jaa|Banawá}} to [[urge]]
+
+===References===
+* 2007. [http://archive.phonetics.ucla.edu/Language/BNH/bnh.html The UCLA Phonetics Lab Archive]. Los Angeles, CA: UCLA Department of Linguistics.
+
+==Japanese==
+
+===Romanization===
+{{ja-romaji}}
+
+# {{ja-romanization of|ひま}}
+
+==Kimbundu==
+[[File:Angola Colobus Monkey 2.jpg|thumb|Hima]]
+
+===Etymology===
+From {{inh|kmb|bnt-pro|*nkɪ́mà}}.
+
+===Noun===
+{{kmb-noun|9}}
+
+# [[monkey]]
+
+====Derived terms====
+{{col|kmb
+|kihima
+}}
+
+===References===
+* {{R:kmb:Junior|50}}
+* {{R:kmb:Matta|5}}
+
+{{C|kmb|Primates}}
+
+==Norwegian Nynorsk==
+
+===Pronunciation===
+* {{IPA|nn|/²hiːmɑ/}} {{nn-pronu-note}}
+
+===Adverb===
+{{nn-adv}}
+
+# {{lb|nn|dialectal}} {{alt form|nn|heime}}
+
+==Pali==
+
+===Alternative forms===
+{{pi-alt}}
+
+===Etymology===
+{{inh+|pi|sa|हिम||snow}}.
+
+===Noun===
+{{pi-noun|n}}
+
+# [[snow]]
+
+====Declension====
+{{pi-decl-noun|g=n}}
+
+===References===
+* {{R:pi:PTS}} <!-- For gender -->
+
+==Swahili==
+
+===Etymology===
+{{ety|sw|:bor|ar:هِمَّة|text=+|tree=1}}
+
+===Pronunciation===
+* {{audio|sw|Sw-ke-hima.flac|a=Kenya}}
+
+===Adverb===
+{{head|sw|adverb}}
+
+# [[quickly]], [[hastily]], [[hurriedly]]
+
+===Noun===
+{{sw-noun|}}
+
+# [[haste]], [[urgency]], [[zeal]]
+
+==Taivoan==
+
+===Etymology===
+From {{inh|tvx|map-pro|*lima}}. Compare {{cog|tay|zima'}}, {{cog|xnb|rima}}, {{cog|mad|lema}}, {{cog|mg|dimy}}, {{cog|mi|rima}}, {{cog|min|limo}}, {{cog|rap|rima}}, {{cog|xsy|hima'||hand}}, {{cog|tl|lima}}, {{cog|ssf|rima}}, {{cog|tiy|limo}}, {{cog|to|nima}}, and {{cog|urk|ลีมา|tr=lima}}.
+
+===Numeral===
+{{head|tvx|numeral}}
+
+# [[five]]
+
+===References===
+* {{R:tvx:Taivoan}}
+
