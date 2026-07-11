@@ -115,26 +115,30 @@ class Also:
     def _parse_also(self, content: Wikicode, also_pattern: str) -> List[Template]:
         return content.filter_templates(matches=also_pattern)
 
-    def __init__(self, site_code: str, page_content: Wikicode):
-        self.site_code = site_code
-
-        also_template_name = self.ALSO_TEMPLATES.get(site_code)
+    def _find_also_template(self):
+        also_template_name = self.ALSO_TEMPLATES.get(self.site_code)
         if also_template_name is None:
             return
 
         also_pattern = self._get_also_pattern(also_template_name)
-        also_templates = self._parse_also(page_content, also_pattern)
+        also_templates = self._parse_also(self.content, also_pattern)
 
         if len(also_templates) == 0:
+            self._also = None
             return
         elif len(also_templates) > 1:
             raise MultipleAlsoError(also_templates, "Page has more than 1 also template.")
         self._also = also_templates[0]
 
         # Error checking ‒ redundant?
-        prelude = get_prelude(page_content)
+        prelude = get_prelude(self.content)
         if self._parse_also(prelude, also_pattern) != also_templates:
-            raise ValueError("Misplaced also template (not at beginning of page)", page_content)
+            raise ValueError("Misplaced also template (not at beginning of page)", self.content)
+
+    def __init__(self, site_code: str, page_content: Wikicode):
+        self.site_code = site_code
+        self.content = page_content
+        self._find_also_template()
 
     def __repr__(self) -> str:
         return str(self.get())
@@ -155,9 +159,17 @@ class Also:
         else:
             return []
 
+    def _insert_also(self):
+        if self.site_code == "en":
+            self.content.insert(0, "{{also|}}\n")
+        elif self.site_code == "de":
+            self.content.insert(0, "{{Siehe auch|}}\n")
+        self._find_also_template()
+
     def set(self, value: List[str]) -> None:
         if self._also is None:
-            return
+            self._insert_also()
+        assert self._also is not None
 
         if self.site_code == "de":
             self._also.add("1", ", ".join(f"[[{x}]]" for x in value))
@@ -181,11 +193,17 @@ class WiktionaryPage(ABC):
     Base class for Wiktionary pages across different language editions.
     """
 
-    def __init__(self, title: str, site_lang: str):
+    def __init__(self, title: str, site_lang: str, from_text: Optional[str] = None):
         self.title = title
         self.site_lang = site_lang
         self.site = self._get_default_site()
         self.page = pywikibot.Page(self.site, title)
+
+        # Control the pre-loaded content of the page,
+        # such as for testing purposes.
+        if from_text is not None:
+            self.page.text = from_text
+
         self._parsed = mwparserfromhell.parse(self.page.text)
         self._also = Also(site_lang, self._parsed)
         self.entries: List[WiktionaryEntry] = []
@@ -312,8 +330,8 @@ class EnglishWiktionaryPage(WiktionaryPage):
     """
     Implementation for English Wiktionary.
     """
-    def __init__(self, title: str):
-        super().__init__(title, site_lang="en")
+    def __init__(self, title: str, from_text: Optional[str] = None):
+        super().__init__(title, site_lang="en", from_text=from_text)
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {"mul": 0, "en": 1}
@@ -323,8 +341,8 @@ class GermanWiktionaryPage(WiktionaryPage):
     """
     Implementation for German Wiktionary.
     """
-    def __init__(self, title: str):
-        super().__init__(title, site_lang="de")
+    def __init__(self, title: str, from_text: Optional[str] = None):
+        super().__init__(title, site_lang="de", from_text=from_text)
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {"de": 0}
@@ -334,8 +352,8 @@ class SwahiliWiktionaryPage(WiktionaryPage):
     """
     Implementation for Swahili Wiktionary.
     """
-    def __init__(self, title: str):
-        super().__init__(title, site_lang="sw")
+    def __init__(self, title: str, from_text: Optional[str] = None):
+        super().__init__(title, site_lang="sw", from_text=from_text)
 
     def _get_language_sort_key(self, lang_code: str) -> int:
         priority_map = {
