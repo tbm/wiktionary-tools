@@ -48,9 +48,13 @@ def create_category(site, category, lang, text):
     """
     title = "Category" + ":" + lang + ":" + category
     page = pywikibot.Page(site, title)
+    if page.exists():
+        print(f"Skipping {title}: category already exists.")
+        return False
     page.text = text
     changelog = text
     page.save(changelog, minor=False)
+    return true
 
 
 @click.command()
