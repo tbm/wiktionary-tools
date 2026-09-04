@@ -88,7 +88,7 @@ def add_category_page(page, category, lang):
     for cat in category.split("|"):
         if not check_category(site, cat, lang):
             print(f"Creating category {cat} for language {lang}")
-            create_category(site, category, lang, "{{auto cat}}\n")
+            create_category(site, cat, lang, "{{auto cat}}\n")
 
 
 if __name__ == "__main__":
