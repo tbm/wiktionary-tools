@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Find missing verb infinitives
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+
+import pywikibot
+
+LATIN_ONLY_PATTERN = re.compile(r"^[a-zA-Z\s\-']+$")
+
+VERB_INFINITIVE_NON_STANDARD = {
+    "isha": "kwisha",
+    "enda": "kwenda",
+    "amba": "kwamba",
+}
+
+
+def get_verb_forms(site):
+    """
+    Get verb forms from Wiktionary
+    """
+    for page in pywikibot.Category(site, "Swahili verb forms").articles():
+        yield page.title()
+
+
+def get_verb_infinitive(verb):
+    """
+    Generate the infinitive for a verb
+    """
+    return VERB_INFINITIVE_NON_STANDARD.get(verb, "ku" + verb)
+
+
+def check_missing_infinitives():
+    """
+    Go through all Swahili verbs and check whether the infinitive exists
+    """
+    site = pywikibot.Site("en", "wiktionary")
+
+    verb_forms = list(get_verb_forms(site))
+    for verb in pywikibot.Category(site, "Swahili verbs").articles():
+        # Skip compound verbs because they should use sw-conj-see
+        if " " in verb.title():
+            continue
+        # Skip Ajami words
+        if not LATIN_ONLY_PATTERN.match(verb.title()):
+            continue
+        infinitive = get_verb_infinitive(verb.title())
+        if infinitive not in verb_forms:
+            print(f"{verb.title()}: infinitive {infinitive} missing")
+
+
+if __name__ == "__main__":
+    check_missing_infinitives()
