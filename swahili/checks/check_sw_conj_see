@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026  Martin Michlmayr <tbm@cyrius.com>
+# License: GNU General Public License (GPL), version 3 or above
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
+Check for missing or wrong sw-conj-see in verbs
+"""
+
+__license__ = "GPL-3.0-or-later"
+
+import re
+
+import pywikibot
+
+RE_SW_CONJ_SEE = re.compile(r"\{\{\s*sw-conj-see\s*\|\s*([\w]+)\}\}")
+
+
+def check_missing_infinitives():
+    """
+    Check for missing or wrong sw-conj-see in verbs
+    """
+    site = pywikibot.Site("en", "wiktionary")
+
+    for verb in pywikibot.Category(site, "Swahili verbs").articles():
+        # Skip if not a compound verbs
+        if " " not in verb.title():
+            continue
+        if "wa na" in verb.title():
+            continue
+        conj = RE_SW_CONJ_SEE.search(verb.text)
+        if not conj:
+            print(verb.title() + ": can't find sw-conj-see")
+            continue
+        base_verb = verb.title().split(" ")[0]
+        if base_verb != conj.group(1):
+            print(f"{verb.title()}: '{base_verb}' and '{conj.group(1)}' don't match")
+
+
+if __name__ == "__main__":
+    check_missing_infinitives()
