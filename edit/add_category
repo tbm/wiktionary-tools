@@ -54,7 +54,7 @@ def create_category(site, category, lang, text):
     page.text = text
     changelog = text
     page.save(changelog, minor=False)
-    return true
+    return True
 
 
 @click.command()
