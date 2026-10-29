@@ -18,6 +18,7 @@ import time
 
 import click
 import pywikibot
+from pywikibot import pagegenerators
 
 import kamusi
 
@@ -45,7 +46,8 @@ def download(lang, out):
     Path.mkdir(out, exist_ok=True)
     site = pywikibot.Site("en", "wiktionary")
     lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
-    for page in lemmas.articles():
+    cat_gen = pagegenerators.CategorizedPageGenerator(lemmas, namespaces=0)
+    for page in pagegenerators.PreloadingGenerator(cat_gen, quiet=True):
         print(page.title())
         outfile = out / Path(page.title().replace("/", "_"))
         if outfile.exists():
