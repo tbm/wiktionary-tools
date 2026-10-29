@@ -10,6 +10,7 @@ Download pages
 
 __license__ = "GPL-3.0-or-later"
 
+import os
 import re
 from pathlib import Path
 import sys
@@ -46,13 +47,21 @@ def download(lang, out):
     lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
     for page in lemmas.articles():
         print(page.title())
+        outfile = out / Path(page.title().replace("/", "_"))
+        if outfile.exists():
+            # Compare timestamp of local file and latest MediaWiki revision
+            local_mtime = outfile.stat().st_mtime
+            remote_mtime = page.latest_revision.timestamp.posix_timestamp()
+            if local_mtime >= remote_mtime:
+                continue
         text = kamusi.get_entry(get_text(page), lang, strip=True)
         if not text:
             print("Can't get entry for", page.title())
             continue
-        outfile = out / Path(page.title().replace("/", "_"))
-        with open(outfile, "w", encoding="utf-8") as outfile:
-            print(text, file=outfile)
+        with open(outfile, "w", encoding="utf-8") as f:
+            print(text, file=f)
+        # Stamp the file with the revision time instead of the current time
+        os.utime(outfile, (remote_mtime, remote_mtime))
 
 
 if __name__ == "__main__":
