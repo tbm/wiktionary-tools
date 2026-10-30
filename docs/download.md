@@ -34,9 +34,17 @@ The approaches can of course be combined.  You can extract the entries from the 
 
 Since Wiktionary entries are stored as regular plain-text files, they can be added to a revision control system, such as [Git](https://git-scm.com/).  This allows makes it easy to review all changes for a language.
 
-Download all initial entries (you can also use `extract_dump` but see the limitation below):
+Download all initial entries:
 
+    download/extract_dump enwiktionary-latest-pages-articles.xml.bz2 --lang sw --out swahili
     download/download --lang sw --out swahili
+
+This will extract entries from the dump file and update them via the web from Wiktionary.
+
+Note that `extract_dump` extracts *all* entries while `download` only downloads lemma entries, so at the end `download` will delete a lot of files that are not lemmas.
+
+Now import all files into Git:
+
     cd swahili
     git init
     git add .
@@ -45,7 +53,7 @@ Download all initial entries (you can also use `extract_dump` but see the limita
 Subsequently, sync the entries, add them to Git and review the changes:
 
     ../../download/download --lang sw --out .
-    git add .
+    git add -A .
     git commit . -m "Update"
     git show
 
