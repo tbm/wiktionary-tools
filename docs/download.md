@@ -9,7 +9,7 @@ Wikimedia provides dump files of the latest [Wiktionary information](https://dum
 
 The tool `download/extract_dump` can be used to extract all entries for a given language.  For example, the following command will write all Swahili (lang code `sw`) entries to the directory `out`.  Each entry will be stored as a separate file, using the page title from Wiktionary as the file name.
 
-    download/extract_dump enwiktionary-latest-pages-articles.xml.bz2  --lang sw --out swahili
+    download/extract_dump enwiktionary-latest-pages-articles.xml.bz2 --lang sw --out swahili
 
 ## Sync from Wiktionary
 
@@ -27,7 +27,7 @@ However, the revision time is per Wiktionary page and one page can contain multi
 
 The approaches can of course be combined.  You can extract the entries from the dump file and subsequently keep them up-to-date by syncing from Wiktionary itself:
 
-    download/extract_dump enwiktionary-latest-pages-articles.xml.bz2  --lang sw --out swahili
+    download/extract_dump enwiktionary-latest-pages-articles.xml.bz2 --lang sw --out swahili
     download/download --lang sw --out swahili
 
 ## Revision control
