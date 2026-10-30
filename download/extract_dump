@@ -16,6 +16,7 @@ __license__ = "GPL-3.0-or-later"
 import bz2
 import lzma
 from pathlib import Path
+import os
 
 import click
 import mwxml
@@ -83,6 +84,10 @@ def main(dump_file: Path, lang: str, out: Path) -> None:
 
             output_file = out / filename
             output_file.write_text(entry, encoding="utf-8")
+
+            # Stamp the file with the revision time instead of the current time
+            rev_ts = float(revision.timestamp)
+            os.utime(output_file, (rev_ts, rev_ts))
 
             count += 1
 
