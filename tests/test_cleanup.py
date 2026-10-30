@@ -165,6 +165,14 @@ def test_convert_inline_params_unnumbered_ant():
     after = "{{ant|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+def test_convert_inline_params_gloss():
+    """
+    Test convert_inline_params(): test gloss -> t
+    """
+    before = "{{af|sw|m-|pika|alt2=-pika|gloss2=to cook}}"
+    after = "{{af|sw|m-|pika<alt:-pika><t:to cook>}}"
+    assert convert_inline_params(before) == after
+
 def test_convert_inline_params_from_files():
     """
     Test convert_inline_params(): compare before and after from files
