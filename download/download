@@ -35,6 +35,18 @@ def get_text(page):
         return get_text(page)
 
 
+def delete_stale_files(out, seen):
+    """
+    Delete stales files, i.e. those that were not seen during download
+    """
+    for path in sorted(out.glob("*")):
+        if path.name.startswith("."):
+            continue
+        if path.name not in seen:
+            print("Removing stale file:", path.name)
+            path.unlink()
+
+
 @click.command()
 @click.option("--lang", type=str, required=True, help="Language code")
 @click.option("--out", type=click.Path(), required=True, help="Directory for output")
@@ -47,9 +59,11 @@ def download(lang, out):
     site = pywikibot.Site("en", "wiktionary")
     lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
     cat_gen = pagegenerators.CategorizedPageGenerator(lemmas, namespaces=0)
+    seen = set()
     for page in pagegenerators.PreloadingGenerator(cat_gen, quiet=True):
         print(page.title())
         outfile = out / Path(page.title().replace("/", "_"))
+        seen.add(outfile.name)
         remote_mtime = page.latest_revision.timestamp.posix_timestamp()
         if outfile.exists():
             # Compare timestamp of local file and latest MediaWiki revision
@@ -64,6 +78,7 @@ def download(lang, out):
             print(text, file=f)
         # Stamp the file with the revision time instead of the current time
         os.utime(outfile, (remote_mtime, remote_mtime))
+    delete_stale_files(out, seen)
 
 
 if __name__ == "__main__":

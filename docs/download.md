@@ -52,5 +52,4 @@ Subsequently, sync the entries, add them to Git and review the changes:
 ## Limitations
 
 * Currently, `extract_dump` extracts all entries for a language while `download` specifically downloads lemmas only.  We should add config options to define what should be extracted or downloaded.
-* Stale files (i.e. Wiktionary entries that were deleted) are not deleted automatically.
 
