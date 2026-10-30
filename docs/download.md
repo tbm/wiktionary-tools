@@ -49,13 +49,16 @@ Now import all files into Git:
     git init
     git add .
     git commit . -m "Initial import"
+    cd ..
 
 Subsequently, sync the entries, add them to Git and review the changes:
 
-    ../../download/download --lang sw --out .
+    download/download --lang sw --out .
+    cd swahili
     git add -A .
     git commit . -m "Update"
     git show
+    cd ..
 
 ## Limitations
 
