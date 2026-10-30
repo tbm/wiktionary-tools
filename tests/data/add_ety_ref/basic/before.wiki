@@ -1,0 +1,18 @@
+==Swahili==
+
+===Etymology===
+From {{der|sw|ar|حِكْمَة}}. {{root|sw|ar|ح ك م}}
+
+===Pronunciation===
+* {{audio|sw|Sw-ke-hekima.flac|Audio (Kenya)}}
+
+===Noun===
+{{sw-noun|n|-}}
+
+# [[wisdom]]
+
+====See also====
+* {{l|sw|busara}}
+
+===Further reading===
+* {{R:Leslie 2010}}

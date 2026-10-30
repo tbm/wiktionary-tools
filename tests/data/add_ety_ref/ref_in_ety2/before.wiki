@@ -1,0 +1,31 @@
+==Swahili==
+
+===Pronunciation===
+* {{audio|sw|Sw-ke-bali.flac|a=Kenya}}
+
+===Etymology 1===
+{{bor+|sw|ar|بَل}}.
+
+====Adverb====
+{{head|sw|adverb}}
+
+# [[however]], on the [[contrary]]
+
+====Conjunction====
+{{head|sw|conjunction}}
+
+# [[but]] [[instead]]
+
+===Etymology 2===
+{{bor+|sw|hi|बाली}}.<ref>{{R:sw:Lodhi:2000|page=125|text=Swahili bali (ear-ring), banyani (Hindu, Jain), bepari (trader, capitalist), bima (insurance), binda (okra, ladies fingers), and binda (loin cloth) are therefore most probably of Hindustani source (or Marathi/Konkani, Punjabi).}}</ref>
+
+====Noun====
+{{sw-noun|n}}
+
+# {{senseid|sw|jewelry}} [[earring]]
+#: {{syn|sw|hereni|kipuli}}
+
+===References===
+{{reflist}}
+
+{{C|sw|Jewelry}}
