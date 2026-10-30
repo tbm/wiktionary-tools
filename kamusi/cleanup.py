@@ -15,6 +15,12 @@ import mwparserfromhell
 _NUMBERED_PARAM = re.compile(r"^(.+?)(\d+)$")
 
 
+# Templates that don't support inline parameter syntax.
+SKIP_TEMPLATES = {
+    "&lit",
+}
+
+
 def convert_inline_params(text):
     """
     Convert templates to inline parameters, e.g.
@@ -23,6 +29,11 @@ def convert_inline_params(text):
     code = mwparserfromhell.parse(text)
 
     for template in code.filter_templates(recursive=True):
+        template_name = str(template.name).strip()
+
+        if template_name in SKIP_TEMPLATES:
+            continue
+
         positional = [param for param in template.params if not param.showkey]
 
         if len(positional) < 2:

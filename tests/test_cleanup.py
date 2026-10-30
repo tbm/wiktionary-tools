@@ -55,6 +55,13 @@ def test_convert_inline_params_syn():
     after = "{{syn|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+def test_convert_inline_params_lit():
+    """
+    Test convert_inline_params(): test &lit - inline syntax not supported
+    """
+    before = "{{&lit|sw|juu|a|alt2=ya}}"
+    assert convert_inline_params(before) == before
+
 def test_convert_inline_params_from_files():
     """
     Test convert_inline_params(): compare before and after from files
