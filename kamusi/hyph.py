@@ -102,8 +102,7 @@ def get_hyphenations(entry):
                     func = get_hyphenations_tl
                 case _:
                     continue
-            for hyph in func(template):
-                yield hyph
+            yield from func(template)
 
 
 def convert_german_kk_to_ck(hyph):
