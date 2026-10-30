@@ -13,6 +13,14 @@ This repository contains a number of Python scripts and modules for Wiktionary (
 * `kamusi` -- a Python module to interact with English Wiktionary
 * `isofyi` --  Python module for the Swedish-Yiddish dictionary published by the Swedish Institute or Language and Folklore (ISOF)
 
+## Set up environment
+
+You can set up your environment like this:
+
+    python3 -m venv .venv --prompt "wikt"
+    source .venv/bin/activate
+    pip install -e .
+
 ## License
 
 [GNU General Public License (GPL)](https://www.gnu.org/licenses/gpl-3.0.en.html), version 3 or above
