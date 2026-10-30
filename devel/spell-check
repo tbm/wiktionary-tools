@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Martin Michlmayr <tbm@cyrius.com>
+
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+find . -name '.?*' -prune -o -name "*.md" -type f -exec aspell -d en_GB --home-dir=. -x --mode markdown check {} \;
+
