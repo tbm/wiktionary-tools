@@ -38,7 +38,7 @@ def fix_trans_sep(entry):
 @click.argument("page")
 def main(page):
     """
-    Merge multiple hyphenation templates into one
+    Fix separation of translations
     """
     site = pywikibot.Site("en", "wiktionary")
     page = pywikibot.Page(site, page)
