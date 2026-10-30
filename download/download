@@ -50,10 +50,10 @@ def download(lang, out):
     for page in pagegenerators.PreloadingGenerator(cat_gen, quiet=True):
         print(page.title())
         outfile = out / Path(page.title().replace("/", "_"))
+        remote_mtime = page.latest_revision.timestamp.posix_timestamp()
         if outfile.exists():
             # Compare timestamp of local file and latest MediaWiki revision
             local_mtime = outfile.stat().st_mtime
-            remote_mtime = page.latest_revision.timestamp.posix_timestamp()
             if local_mtime >= remote_mtime:
                 continue
         text = kamusi.get_entry(get_text(page), lang, strip=True)
