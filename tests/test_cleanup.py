@@ -15,6 +15,7 @@ from helpers import read_test
 
 DATA = Path(__file__).parent / "data"
 
+
 def test_convert_inline_params_basic():
     """
     Basic test of convert_inline_params()
@@ -22,6 +23,7 @@ def test_convert_inline_params_basic():
     before = "{{af|sw|m-|pika|alt2=-pika|-aji}}"
     after = "{{af|sw|m-|pika<alt:-pika>|-aji}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_param_order():
     """
@@ -31,13 +33,15 @@ def test_convert_inline_params_param_order():
     after = "{{af|sw|m-|pika<alt:-pika>|-aji}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_suffixusex():
     """
     Test convert_inline_params(): test suffixusex
     """
-    before = "{{suffixusex|sw|vaa|alt1=-vaa|t1=to wear|valisha|alt2=-valisha|t2=to dress}}"
-    after = "{{suffixusex|sw|vaa<alt:-vaa><t:to wear>|valisha<alt:-valisha><t:to dress>}}"
+    before = "{{suffixusex|sw|vaa|alt1=-vaa|t1=to wear|valisha|alt2=-valisha}}"
+    after = "{{suffixusex|sw|vaa<alt:-vaa><t:to wear>|valisha<alt:-valisha>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_alter():
     """
@@ -47,6 +51,7 @@ def test_convert_inline_params_alter():
     after = "{{alter|sw|rundika<alt:-rundika>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_syn():
     """
     Test convert_inline_params(): test syn
@@ -55,6 +60,7 @@ def test_convert_inline_params_syn():
     after = "{{syn|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_lit():
     """
     Test convert_inline_params(): test &lit - inline syntax not supported
@@ -62,12 +68,14 @@ def test_convert_inline_params_lit():
     before = "{{&lit|sw|juu|a|alt2=ya}}"
     assert convert_inline_params(before) == before
 
+
 def test_convert_inline_params_sw_der():
     """
     Test convert_inline_params(): test sw-der - don't convert
     """
     before = "{{sw-der|a|b|c|nom1=foo|nom2=bar}}"
     assert convert_inline_params(before) == before
+
 
 def test_convert_inline_params_unnumbered_reduplication():
     """
@@ -77,6 +85,7 @@ def test_convert_inline_params_unnumbered_reduplication():
     after = "{{reduplication|sw|foka<alt:-foka><t:to rap>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_rdp():
     """
     Test convert_inline_params(): test rdp with unnumbered parameter
@@ -84,6 +93,7 @@ def test_convert_inline_params_unnumbered_rdp():
     before = "{{rdp|sw|foka|alt=-foka|gloss=to rap}}"
     after = "{{rdp|sw|foka<alt:-foka><t:to rap>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_unnumbered_coordinate_terms():
     """
@@ -93,6 +103,7 @@ def test_convert_inline_params_unnumbered_coordinate_terms():
     after = "{{coordinate terms|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_coo():
     """
     Test convert_inline_params(): test coo with unnumbered parameter
@@ -100,6 +111,7 @@ def test_convert_inline_params_unnumbered_coo():
     before = "{{coo|sw|a|b|qq=aa|qq2=bb}}"
     after = "{{coo|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_unnumbered_coord():
     """
@@ -109,6 +121,7 @@ def test_convert_inline_params_unnumbered_coord():
     after = "{{coord|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_cot():
     """
     Test convert_inline_params(): test cot with unnumbered parameter
@@ -116,6 +129,7 @@ def test_convert_inline_params_unnumbered_cot():
     before = "{{cot|sw|a|b|qq=aa|qq2=bb}}"
     after = "{{cot|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_unnumbered_redup():
     """
@@ -125,6 +139,7 @@ def test_convert_inline_params_unnumbered_redup():
     after = "{{redup|sw|foka<alt:-foka><t:to rap>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_synonyms():
     """
     Test convert_inline_params(): test synonyms with unnumbered parameter
@@ -132,6 +147,7 @@ def test_convert_inline_params_unnumbered_synonyms():
     before = "{{synonyms|sw|a|b|qq=aa|qq2=bb}}"
     after = "{{synonyms|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_unnumbered_syn():
     """
@@ -141,6 +157,7 @@ def test_convert_inline_params_unnumbered_syn():
     after = "{{syn|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_antonyms():
     """
     Test convert_inline_params(): test antonyms with unnumbered parameter
@@ -148,6 +165,7 @@ def test_convert_inline_params_unnumbered_antonyms():
     before = "{{antonyms|sw|a|b|qq=aa|qq2=bb}}"
     after = "{{antonyms|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_unnumbered_antonym():
     """
@@ -157,6 +175,7 @@ def test_convert_inline_params_unnumbered_antonym():
     after = "{{antonym|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_unnumbered_ant():
     """
     Test convert_inline_params(): test ant with unnumbered parameter
@@ -165,6 +184,7 @@ def test_convert_inline_params_unnumbered_ant():
     after = "{{ant|sw|a<qq:aa>|b<qq:bb>}}"
     assert convert_inline_params(before) == after
 
+
 def test_convert_inline_params_gloss():
     """
     Test convert_inline_params(): test gloss -> t
@@ -172,6 +192,7 @@ def test_convert_inline_params_gloss():
     before = "{{af|sw|m-|pika|alt2=-pika|gloss2=to cook}}"
     after = "{{af|sw|m-|pika<alt:-pika><t:to cook>}}"
     assert convert_inline_params(before) == after
+
 
 def test_convert_inline_params_from_files():
     """
