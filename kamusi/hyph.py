@@ -292,6 +292,7 @@ class HyphenationID(Hyphenation):
             remove_diacritics(self.hyph_str)
         ):
             return True
+        return False
 
 
 class HyphenationIT(Hyphenation):
