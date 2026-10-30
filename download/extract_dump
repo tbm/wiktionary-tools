@@ -73,7 +73,7 @@ def main(dump_file: Path, lang: str, out: Path) -> None:
             if revision is None or revision.text is None:
                 continue
 
-            entry = kamusi.get_entry(revision.text, lang)
+            entry = kamusi.get_entry(revision.text, lang, strip=True)
             if not entry:
                 continue
 
@@ -83,7 +83,7 @@ def main(dump_file: Path, lang: str, out: Path) -> None:
             filename = filename.replace("\0", "_")
 
             output_file = out / filename
-            output_file.write_text(entry, encoding="utf-8")
+            output_file.write_text(entry + "\n", encoding="utf-8")
 
             # Stamp the file with the revision time instead of the current time
             rev_ts = float(revision.timestamp)
