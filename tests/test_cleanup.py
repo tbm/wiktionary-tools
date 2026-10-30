@@ -8,10 +8,7 @@ Tests for kamusi.cleanup functions
 
 from pathlib import Path
 
-import pytest
-
 from kamusi.cleanup import convert_inline_params
-from helpers import read_test
 
 DATA = Path(__file__).parent / "data"
 
