@@ -17,7 +17,12 @@ _NUMBERED_PARAM = re.compile(r"^(.+?)(\d+)$")
 
 # Templates that don't support inline parameter syntax.
 SKIP_TEMPLATES = {
+    # No support for inline syntax
     "&lit",
+    # Numbers have different meanings
+    "sw-der",
+    "sw-decl",
+    "sw-decl-verbal",
 }
 
 

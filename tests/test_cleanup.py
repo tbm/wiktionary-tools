@@ -62,6 +62,13 @@ def test_convert_inline_params_lit():
     before = "{{&lit|sw|juu|a|alt2=ya}}"
     assert convert_inline_params(before) == before
 
+def test_convert_inline_params_sw_der():
+    """
+    Test convert_inline_params(): test sw-der - don't convert
+    """
+    before = "{{sw-der|a|b|c|nom1=foo|nom2=bar}}"
+    assert convert_inline_params(before) == before
+
 def test_convert_inline_params_from_files():
     """
     Test convert_inline_params(): compare before and after from files
