@@ -25,3 +25,5 @@ You can set up your environment like this:
 
 [GNU General Public License (GPL)](https://www.gnu.org/licenses/gpl-3.0.en.html), version 3 or above
 
+Some test cases are taken from Wiktionary; they are distributed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
