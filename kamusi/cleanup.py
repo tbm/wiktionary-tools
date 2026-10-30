@@ -25,6 +25,23 @@ SKIP_TEMPLATES = {
     "sw-decl-verbal",
 }
 
+# Templates that support unnumbered parameters as equivalent to
+# parameter 1.
+UNNUMBERED_AS_ONE = {
+    "reduplication",
+    "rdp",
+    "redup",
+    "coordinate terms",
+    "coo",
+    "coord",
+    "cot",
+    "antonyms",
+    "antonym",
+    "ant",
+    "synonyms",
+    "syn",
+}
+
 
 def convert_inline_params(text):
     """
@@ -59,7 +76,12 @@ def convert_inline_params(text):
             if match:
                 prefix, number = match.groups()
                 number = int(number)
+            elif template_name in UNNUMBERED_AS_ONE:
+                prefix = name
+                number = 1
             else:
+                # Unnumbered parameter on a template that doesn't
+                # support this conversion.
                 continue
 
             # foo1 -> positional[1]
