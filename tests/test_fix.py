@@ -85,3 +85,11 @@ def test_fix_lang_code_whitespace():
     assert fix_lang_code(before, "sw") == before
     before = "{{af| sw |...}}"
     assert fix_lang_code(before, "sw") == before
+
+
+def test_fix_lang_code_accept_mul():
+    """
+    Test fix_lang_code(): accept "mul" as lang code
+    """
+    before = "{{audio|mul|Near-open front unrounded vowel.ogg}}"
+    assert fix_lang_code(before, "sw") == before
