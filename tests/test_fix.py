@@ -93,3 +93,11 @@ def test_fix_lang_code_accept_mul():
     """
     before = "{{audio|mul|Near-open front unrounded vowel.ogg}}"
     assert fix_lang_code(before, "sw") == before
+
+
+def test_fix_lang_code_param_number():
+    """
+    Test fix_lang_code(): test for 1=langcode syntax
+    """
+    before = "{{compound|1=de|2=hinweg|3=trösten}}"
+    assert fix_lang_code(before, "de") == before
