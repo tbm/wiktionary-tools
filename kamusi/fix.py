@@ -314,6 +314,6 @@ def fix_lang_code(text, lang):
         template_name = str(template.name).strip()
         if template_name not in LANGCODE_TEMPLATES:
             continue
-        if template.has("1"):
+        if template.has("1") and template.get("1").value.strip() != lang:
             template.get("1").value = lang
     return str(code)

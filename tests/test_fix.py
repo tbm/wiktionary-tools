@@ -73,3 +73,15 @@ def test_fix_lang_code_all():
         before = "{{" + templ + "|de|...}}"
         after = "{{" + templ + "|sw|...}}"
         assert fix_lang_code(before, "sw") == after
+
+
+def test_fix_lang_code_whitespace():
+    """
+    Test fix_lang_code(): whitespace around lang code
+    """
+    before = "{{af|sw |...}}"
+    assert fix_lang_code(before, "sw") == before
+    before = "{{af| sw|...}}"
+    assert fix_lang_code(before, "sw") == before
+    before = "{{af| sw |...}}"
+    assert fix_lang_code(before, "sw") == before
