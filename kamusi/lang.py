@@ -18,7 +18,7 @@ LANG_MAP = {
     "jam": "Jamaican Creole",
     "lg": "Luganda",
     "mfe": "Mauritian Creole",
-    "mul" :"Translingual",
+    "mul": "Translingual",
     "ny": "Chichewa",
     "pam": "Kapampangan",
     "rw": "Rwanda-Rundi",
