@@ -330,6 +330,9 @@ def fix_lang_code(text, lang):
         # affix with nocat is no problem
         if template.has("nocat"):
             continue
+        # quote templates can put the actual language code in termlang
+        if template.has("termlang"):
+            continue
         # By default, the language code is parameter 1 but this is
         # not always the case.
         param = "1"

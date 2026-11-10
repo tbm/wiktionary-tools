@@ -197,3 +197,11 @@ def test_fix_lang_code_surface_analysis_test_empty_parameter1():
     """
     before = "{{surface analysis}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_quote_termlang():
+    """
+    Test fix_lang_code(): ignore if param "termlang" exists
+    """
+    before = "{{quote-journal|en|termlang=fr|...}}"
+    assert fix_lang_code(before, "de") == before
