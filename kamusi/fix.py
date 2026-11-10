@@ -305,6 +305,11 @@ LANGCODE_TEMPLATES = (
     "was fwotd",
 )
 
+LANGCODE_TEMPLATES_IGNORE = (
+    # Specifically used to refer to other languages
+    "lang",
+)
+
 
 def fix_lang_code(text, lang):
     """
@@ -315,6 +320,8 @@ def fix_lang_code(text, lang):
     for template in code.filter_templates(recursive=True):
         template_name = str(template.name).strip()
         if template_name not in LANGCODE_TEMPLATES:
+            continue
+        if template_name in LANGCODE_TEMPLATES_IGNORE:
             continue
         # affix with nocat is no problem
         if template.has("nocat"):

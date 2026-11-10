@@ -70,6 +70,8 @@ def test_fix_lang_code_all():
     Test fix_lang_code(): test all templates
     """
     for templ in kamusi.fix.LANGCODE_TEMPLATES:
+        if templ in kamusi.fix.LANGCODE_TEMPLATES_IGNORE:
+            continue
         before = "{{" + templ + "|de|...}}"
         after = "{{" + templ + "|sw|...}}"
         assert fix_lang_code(before, "sw") == after
@@ -135,4 +137,12 @@ def test_fix_lang_code_nocat():
     Test fix_lang_code(): test for nocat=1
     """
     before = "{{af|da|foo|bar|nocat=1}}"
+    assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_lang():
+    """
+    Test fix_lang_code(): "lang" is used to refer to other languages
+    """
+    before = "{{lang|sw|moja}}"
     assert fix_lang_code(before, "de") == before
