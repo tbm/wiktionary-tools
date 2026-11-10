@@ -205,3 +205,19 @@ def test_fix_lang_code_quote_termlang():
     """
     before = "{{quote-journal|en|termlang=fr|...}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_quote_multiple_lang_code():
+    """
+    Test fix_lang_code(): "quote" with multiple plan language codes
+    """
+    before = "{{quote-journal|en,fr, es|...}}"
+    assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_cite_multiple_lang_code():
+    """
+    Test fix_lang_code(): "cite" with multiple plan language codes
+    """
+    before = "{{cite-web|en,fr, es|...}}"
+    assert fix_lang_code(before, "de") == before

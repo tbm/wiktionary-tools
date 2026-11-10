@@ -339,6 +339,11 @@ def fix_lang_code(text, lang):
         if not template.has(param):
             continue
         val = str(template.get(param).value)
+        # quote templates allow a comma-separated list of language codes.
+        # Let's ignore those to avoid adding too much complexity.
+        if template_name.startswith("quote-") or template_name.startswith("cite-"):
+            if "," in val:
+                continue
         # "surf" allows + syntax in parameter 1, pushing the lang code
         # to parameter 2
         if template_name.startswith("surf") and val.lstrip().startswith("+"):
