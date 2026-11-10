@@ -271,6 +271,8 @@ LANGCODE_TEMPLATES = (
     "superlative of",
     "superseded spelling of",
     "surf",
+    "surface etymology",
+    "surface analysis",
     "surname",
     "syllabic abbreviation of",
     "syn of",
@@ -315,7 +317,7 @@ LANGCODE_TEMPLATES_IGNORE = (
 
 def fix_lang_code(text, lang):
     """
-    Fix the language code (parameter 1) in templates that require it.
+    Fix the language code in templates that require it.
     """
     code = mwparserfromhell.parse(text)
 
@@ -328,12 +330,20 @@ def fix_lang_code(text, lang):
         # affix with nocat is no problem
         if template.has("nocat"):
             continue
-        if not template.has("1"):
+        # By default, the language code is parameter 1 but this is
+        # not always the case.
+        param = "1"
+        if not template.has(param):
             continue
-        val = str(template.get("1").value)
+        val = str(template.get(param).value)
+        # "surf" allows + syntax in parameter 1, pushing the lang code
+        # to parameter 2
+        if template_name.startswith("surf") and val.lstrip().startswith("+"):
+            param = "2"
+            val = str(template.get(param).value)
         old_langcode = get_langcode(val)
         if not old_langcode:
             continue
         if old_langcode not in (lang, "mul"):
-            template.get("1").value = val.replace(old_langcode, lang, count=1)
+            template.get(param).value = val.replace(old_langcode, lang, count=1)
     return str(code)

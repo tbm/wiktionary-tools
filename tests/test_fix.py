@@ -154,3 +154,30 @@ def test_fix_lang_code_attention():
     """
     before = "{{attention|sw|is this right?}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_surf():
+    """
+    Test fix_lang_code(): "surf" allows special + syntax
+    """
+    before = "{{surf|+com|sw|foo|bar}}"
+    after = "{{surf|+com|de|foo|bar}}"
+    assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_surface_etymology():
+    """
+    Test fix_lang_code(): "surface etymology" allows special + syntax
+    """
+    before = "{{surface etymology|+com|sw|foo|bar}}"
+    after = "{{surface etymology|+com|de|foo|bar}}"
+    assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_surface_analysis():
+    """
+    Test fix_lang_code(): "surface analysis" allows special + syntax
+    """
+    before = "{{surface analysis|+com|sw|foo|bar}}"
+    after = "{{surface analysis|+com|de|foo|bar}}"
+    assert fix_lang_code(before, "de") == after
