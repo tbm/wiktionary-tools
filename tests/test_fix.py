@@ -148,6 +148,14 @@ def test_fix_lang_code_lang():
     assert fix_lang_code(before, "de") == before
 
 
+def test_fix_lang_code_lang_whitespace():
+    """
+    Test fix_lang_code(): check for whitespace in parameter 0
+    """
+    before = "{{ lang |sw|moja}}"
+    assert fix_lang_code(before, "de") == before
+
+
 def test_fix_lang_code_attention():
     """
     Test fix_lang_code(): "attention" is used to refer to other languages
@@ -181,3 +189,11 @@ def test_fix_lang_code_surface_analysis():
     before = "{{surface analysis|+com|sw|foo|bar}}"
     after = "{{surface analysis|+com|de|foo|bar}}"
     assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_surface_analysis_test_empty_parameter1():
+    """
+    Test fix_lang_code(): test for no parameter 1
+    """
+    before = "{{surface analysis}}"
+    assert fix_lang_code(before, "de") == before
