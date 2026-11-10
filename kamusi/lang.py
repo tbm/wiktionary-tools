@@ -26,7 +26,7 @@ LANG_MAP = {
     "bnt-sab-pro": "Proto-Sabaki",
 }
 
-LANG_CODE = re.compile(r"([a-z]{2,3}(-[a-zA-Z]{2,3})?)")
+LANG_CODE = re.compile(r"([a-z]{2,3}(-[a-zA-Z]{2,3}){0,2})")
 
 
 def code_to_name(lang, site="en"):
