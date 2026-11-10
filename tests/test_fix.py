@@ -221,3 +221,13 @@ def test_fix_lang_code_cite_multiple_lang_code():
     """
     before = "{{cite-web|en,fr, es|...}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_allow_sub_lang_codes():
+    """
+    Test fix_lang_code(): allow ll-LL codes
+    """
+    before = "{{audio|pt-BR|...}}"
+    assert fix_lang_code(before, "pt") == before
+    before = "{{quote-web|de-CH|...}}"
+    assert fix_lang_code(before, "de") == before

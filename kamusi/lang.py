@@ -48,3 +48,19 @@ def get_langcode(text):
     """
     match = LANG_CODE.search(text)
     return match.group(1) if match else None
+
+
+def lang_codes_match(a: str, b: str, *, permissive: bool = False) -> bool:
+    """
+    Check whether two language codes match.
+
+    Strict (default): full tags must be equal, ignoring case (pt-br == pt-BR).
+    Permissive: only the primary language subtag is compared (pt" == pt-BR).
+    """
+    a = a.lower().replace("_", "-")
+    b = b.lower().replace("_", "-")
+    if permissive:
+        if a == "mul":
+            return True
+        a, b = a.split("-")[0], b.split("-")[0]
+    return a == b
