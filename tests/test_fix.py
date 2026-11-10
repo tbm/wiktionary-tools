@@ -191,6 +191,14 @@ def test_fix_lang_code_surface_analysis():
     assert fix_lang_code(before, "de") == after
 
 
+def test_fix_lang_code_surf_lit():
+    """
+    Test fix_lang_code(): "surf" with +lit has no lang code
+    """
+    before = "{{surf|+lit|good day}}"
+    assert fix_lang_code(before, "pl") == before
+
+
 def test_fix_lang_code_surface_analysis_test_empty_parameter1():
     """
     Test fix_lang_code(): test for no parameter 1

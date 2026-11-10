@@ -362,6 +362,9 @@ def fix_lang_code(text, lang):
         # "surf" allows + syntax in parameter 1, pushing the lang code
         # to parameter 2
         if template_name.startswith("surf") and val.lstrip().startswith("+"):
+            # +lit has no lang code
+            if val.strip() == "+lit":
+                continue
             param = "2"
             val = str(template.get(param).value)
         old_langcode = get_langcode(val)
