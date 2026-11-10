@@ -10,6 +10,8 @@ __license__ = "GPL-3.0-or-later"
 
 import mwparserfromhell
 
+from kamusi.lang import get_langcode
+
 LANGCODE_TEMPLATES = (
     "&lit",
     "C",
@@ -314,6 +316,12 @@ def fix_lang_code(text, lang):
         template_name = str(template.name).strip()
         if template_name not in LANGCODE_TEMPLATES:
             continue
-        if template.has("1") and template.get("1").value.strip() not in (lang, "mul"):
-            template.get("1").value = lang
+        if not template.has("1"):
+            continue
+        val = str(template.get("1").value)
+        old_langcode = get_langcode(val)
+        if not old_langcode:
+            continue
+        if old_langcode not in (lang, "mul"):
+            template.get("1").value = val.replace(old_langcode, lang, count=1)
     return str(code)

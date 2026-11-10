@@ -8,6 +8,8 @@ Functions related to languages and language codes.
 
 __license__ = "GPL-3.0-or-later"
 
+import re
+
 import mediawiki_langcodes
 
 # Wiktionary-specific overrides
@@ -24,6 +26,8 @@ LANG_MAP = {
     "bnt-sab-pro": "Proto-Sabaki",
 }
 
+LANG_CODE = re.compile(r"([a-z]{2,3}(-[a-zA-Z]{2,3})?)")
+
 
 def code_to_name(lang, site="en"):
     """
@@ -36,3 +40,11 @@ def code_to_name(lang, site="en"):
     if site == "sv":
         return lang_name.title()
     return lang_name
+
+
+def get_langcode(text):
+    """
+    Return language code from string
+    """
+    match = LANG_CODE.search(text)
+    return match.group(1) if match else None

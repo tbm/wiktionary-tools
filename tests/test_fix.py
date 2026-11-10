@@ -101,3 +101,30 @@ def test_fix_lang_code_param_number():
     """
     before = "{{compound|1=de|2=hinweg|3=trösten}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_newline():
+    """
+    Test fix_lang_code(): test for newline in value
+    """
+    before = "{{col|da\n|foo\n|bar\n}}"
+    after = "{{col|de\n|foo\n|bar\n}}"
+    assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_comment():
+    """
+    Test fix_lang_code(): test for comment in value
+    """
+    before = "{{col|da<!--foo-->\n|foo\n|bar\n}}"
+    after = "{{col|de<!--foo-->\n|foo\n|bar\n}}"
+    assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_comment_with_lang_code():
+    """
+    Test fix_lang_code(): test for comment containg old lang code in value
+    """
+    before = "{{col|da<!--lang code da here-->\n|foo\n|bar\n}}"
+    after = "{{col|de<!--lang code da here-->\n|foo\n|bar\n}}"
+    assert fix_lang_code(before, "de") == after
