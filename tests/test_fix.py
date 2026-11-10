@@ -128,3 +128,11 @@ def test_fix_lang_code_comment_with_lang_code():
     before = "{{col|da<!--lang code da here-->\n|foo\n|bar\n}}"
     after = "{{col|de<!--lang code da here-->\n|foo\n|bar\n}}"
     assert fix_lang_code(before, "de") == after
+
+
+def test_fix_lang_code_nocat():
+    """
+    Test fix_lang_code(): test for nocat=1
+    """
+    before = "{{af|da|foo|bar|nocat=1}}"
+    assert fix_lang_code(before, "de") == before

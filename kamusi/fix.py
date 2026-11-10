@@ -316,6 +316,9 @@ def fix_lang_code(text, lang):
         template_name = str(template.name).strip()
         if template_name not in LANGCODE_TEMPLATES:
             continue
+        # affix with nocat is no problem
+        if template.has("nocat"):
+            continue
         if not template.has("1"):
             continue
         val = str(template.get("1").value)
