@@ -146,3 +146,11 @@ def test_fix_lang_code_lang():
     """
     before = "{{lang|sw|moja}}"
     assert fix_lang_code(before, "de") == before
+
+
+def test_fix_lang_code_attention():
+    """
+    Test fix_lang_code(): "attention" is used to refer to other languages
+    """
+    before = "{{attention|sw|is this right?}}"
+    assert fix_lang_code(before, "de") == before

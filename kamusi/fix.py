@@ -308,6 +308,8 @@ LANGCODE_TEMPLATES = (
 LANGCODE_TEMPLATES_IGNORE = (
     # Specifically used to refer to other languages
     "lang",
+    # Often used to highlight questions about other languages in etymologies
+    "attention",
 )
 
 
