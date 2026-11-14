@@ -58,11 +58,13 @@ def download(lang, out):
     Path.mkdir(out, exist_ok=True)
     site = pywikibot.Site("en", "wiktionary")
     lemmas = pywikibot.Category(site, kamusi.code_to_name(lang) + "_lemmas")
-    cat_gen = pagegenerators.CategorizedPageGenerator(lemmas, namespaces=0)
+    cat_gen = pagegenerators.CategorizedPageGenerator(lemmas)
     seen = set()
     for page in pagegenerators.PreloadingGenerator(cat_gen, quiet=True):
-        print(page.title())
-        outfile = out / Path(page.title().replace("/", "_"))
+        prefix = kamusi.code_to_name(lang) + "/"
+        title = page.title(with_ns=False).removeprefix(prefix)
+        print(title)
+        outfile = out / Path(title.replace("/", "_"))
         seen.add(outfile.name)
         remote_mtime = page.latest_revision.timestamp.posix_timestamp()
         if outfile.exists():
