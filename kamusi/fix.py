@@ -271,6 +271,7 @@ LANGCODE_TEMPLATES = (
     "senseid",
     "senseno",
     "short for",
+    "sid",
     "singular of",
     "slender form of",
     "soft mutation of",
