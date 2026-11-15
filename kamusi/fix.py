@@ -171,6 +171,8 @@ LANGCODE_TEMPLATES = (
     "init of",
     "initialism of",
     "initialism",
+    "internationalism",
+    "intnat",
     "iterative of",
     "l-self",
     "label",
